@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Цифровой чек-ап — Cyber Office</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f1622; --bg2:#151f30; --card:#182234; --line:#27354b;
+  --text:#eef2f8; --muted:#9fb0c6; --accent:#c8a86b; --accent2:#e2c88f;
+  --ok:#5fb98b; --mid:#e0a95f; --bad:#df7264;
+  box-sizing:border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+*{box-sizing:border-box}
+html{scroll-padding-top: env(safe-area-inset-top, 0px);}
+body{
+  margin:0;background:
+   radial-gradient(1100px 600px at 80% -10%, #1d2a40 0%, transparent 60%),
+   var(--bg);
+  color:var(--text);font-family:'Manrope',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:720px;margin:0 auto;padding:28px 20px 56px}
+.brand{display:flex;align-items:center;gap:10px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.brand i{width:7px;height:7px;border-radius:50%;background:var(--accent);display:block}
+h1{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-size:clamp(30px,6.5vw,44px);line-height:1.12;margin:22px 0 14px;letter-spacing:.2px}
+.lead{color:var(--muted);font-size:16px;max-width:52ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 26px}
+.chip{border:1px solid var(--line);border-radius:999px;padding:7px 13px;font-size:13px;color:var(--muted)}
+.btn{appearance:none;border:0;cursor:pointer;font-family:inherit;font-weight:600;font-size:16px;
+  background:linear-gradient(180deg,var(--accent2),var(--accent));color:#1b1608;border-radius:12px;padding:15px 24px;width:100%;
+  transition:transform .12s ease,filter .12s ease;display:block;text-align:center;text-decoration:none}
+.btn:hover{filter:brightness(1.05)}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+.note{font-size:13px;color:var(--muted);margin-top:14px;display:flex;gap:9px;align-items:flex-start}
+.note svg{flex:0 0 auto;margin-top:2px}
+.card{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--line);border-radius:18px;padding:22px}
+.progress{height:3px;background:var(--line);border-radius:2px;overflow:hidden;margin-bottom:20px}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0;transition:width .35s ease}
+.step{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.q{font-size:20px;font-weight:600;line-height:1.35;margin:0 0 6px}
+.qsub{color:var(--muted);font-size:14px;margin:0 0 18px}
+.opt{display:block;width:100%;text-align:left;background:#1a2537;border:1px solid var(--line);color:var(--text);
+  border-radius:13px;padding:14px 16px;margin-bottom:9px;font:inherit;cursor:pointer;transition:border-color .15s,background .15s}
+.opt:hover{border-color:var(--accent);background:#1e2b40}
+.opt b{display:block;font-weight:600;font-size:15px}
+.opt span{display:block;color:var(--muted);font-size:13px;margin-top:3px}
+.back{background:none;border:0;color:var(--muted);font:inherit;font-size:14px;cursor:pointer;padding:10px 0;margin-top:6px}
+.back:hover{color:var(--text)}
+.hidden{display:none}
+
+.dial{display:flex;align-items:center;gap:20px;margin-bottom:6px}
+.ring{position:relative;flex:0 0 auto;width:104px;height:104px}
+.ring svg{transform:rotate(-90deg)}
+.ring .val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring .val b{font-size:26px;font-weight:700;line-height:1}
+.ring .val span{font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:3px}
+.lvl{font-family:'Cormorant Garamond',Georgia,serif;font-size:30px;font-weight:600;line-height:1.15;margin:0 0 6px}
+.lvl-sub{color:var(--muted);font-size:14px;margin:0}
+.sect{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:26px 0 12px}
+.risk{border:1px solid var(--line);border-left:3px solid var(--bad);border-radius:12px;padding:14px 16px;margin-bottom:10px;background:#1a2436}
+.risk.mid{border-left-color:var(--mid)}
+.risk b{display:block;font-size:15px;margin-bottom:4px}
+.risk p{margin:0;color:var(--muted);font-size:14px}
+.risk .do{margin-top:9px;color:var(--text);font-size:14px;display:flex;gap:8px}
+.risk .do i{color:var(--accent);font-style:normal}
+.good{display:flex;gap:9px;align-items:flex-start;color:var(--muted);font-size:14px;margin-bottom:8px}
+.good i{color:var(--ok);font-style:normal}
+.cta{margin-top:28px;background:linear-gradient(180deg,#1c2942,#16202f);border:1px solid var(--line);border-radius:18px;padding:22px}
+.cta h3{font-family:'Cormorant Garamond',Georgia,serif;font-size:24px;font-weight:600;margin:0 0 8px}
+.cta p{color:var(--muted);font-size:14px;margin:0 0 16px}
+.foot{margin-top:34px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- INTRO -->
+<section id="intro">
+  <div class="brand"><i></i> Cyber Office</div>
+  <h1>Цифровой чек-ап<br>за пять минут</h1>
+  <p class="lead">Шестнадцать вопросов о том, как устроена ваша цифровая жизнь. В ответ — карта ваших слабых мест и первые шаги, которые можно сделать сегодня же, без нашего участия.</p>
+  <div class="meta">
+    <span class="chip">16 вопросов</span>
+    <span class="chip">5 минут</span>
+    <span class="chip">Без регистрации</span>
+  </div>
+  <button class="btn" onclick="start()">Начать проверку</button>
+  <div class="note">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9fb0c6" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V6l8-4z"/></svg>
+    <span>Ответы обрабатываются прямо в вашем браузере и никуда не передаются. Мы их не видим и не храним.</span>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section id="quiz" class="hidden">
+  <div class="progress"><i id="bar"></i></div>
+  <div class="card">
+    <div class="step" id="step"></div>
+    <h2 class="q" id="qtext"></h2>
+    <p class="qsub" id="qsub"></p>
+    <div id="opts"></div>
+  </div>
+  <button class="back" id="back" onclick="back()">← Назад</button>
+</section>
+
+<!-- RESULT -->
+<section id="result" class="hidden">
+  <div class="brand"><i></i> Ваш результат</div>
+  <div class="card" style="margin-top:18px">
+    <div class="dial">
+      <div class="ring">
+        <svg width="104" height="104">
+          <circle cx="52" cy="52" r="46" stroke="#27354b" stroke-width="8" fill="none"/>
+          <circle id="arc" cx="52" cy="52" r="46" stroke="#c8a86b" stroke-width="8" fill="none"
+                  stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="289" style="transition:stroke-dashoffset 1s ease"/>
+        </svg>
+        <div class="val"><b id="score">0</b><span>из 100</span></div>
+      </div>
+      <div>
+        <h2 class="lvl" id="lvl"></h2>
+        <p class="lvl-sub" id="lvlsub"></p>
+      </div>
+    </div>
+  </div>
+
+  <div id="risks"></div>
+  <div id="goods"></div>
+
+  <div class="cta">
+    <h3>Что дальше</h3>
+    <p>Этот тест показывает только то, что видно снаружи. Полная диагностика — это ваш цифровой паспорт: все аккаунты, устройства, доступы помощников и близких, цепочки восстановления и сценарии на случай инцидента. С планом работ и приоритетами.</p>
+    <a class="btn" href="https://t.me/Andreianatolyevich" target="_blank" rel="noopener">Запросить диагностику</a>
+    <button class="btn ghost" style="margin-top:9px" onclick="again()">Пройти заново</button>
+  </div>
+
+  <div class="foot">
+    Cyber Office — внешняя служба кибербезопасности для предпринимателей и их семей.<br>
+    Результат теста носит ознакомительный характер и не заменяет полную диагностику.
+  </div>
+</section>
+
+</div>
+
+<script>
+const Q = [
+  {
+    q:"Стоит ли на вашем Telegram облачный пароль?",
+    sub:"Это отдельный пароль в настройках безопасности — без него аккаунт забирают одним перехваченным кодом из SMS.",
+    o:[
+      {t:"Да, и я знаю, где хранится код восстановления",d:"Пароль поставлен мной, доступ к нему есть",p:0},
+      {t:"Пароль есть, но куда записан — не помню",d:"Ставил давно, восстановить не смогу",p:2},
+      {t:"Нет, или не знаю, что это такое",d:"Вход только по коду из сообщения",p:4}
+    ],
+    r:{t:"Telegram без облачного пароля",d:"Оба известных нам случая в этом кругу — угон Telegram. Без облачного пароля достаточно выманить один код, и с вашего аккаунта пишут вашим партнёрам.",a:"Настройки → Конфиденциальность → Облачный пароль. 4 минуты."}
+  },
+  {
+    q:"Давний знакомый присылает в личку ссылку: «проголосуй» или «держи подарок Premium». Ваши действия?",
+    sub:"",
+    o:[
+      {t:"Перезвоню или спрошу голосом, прежде чем открывать",d:"",p:0},
+      {t:"Открою, но пароль нигде вводить не стану",d:"",p:2},
+      {t:"Скорее всего открою — это же знакомый",d:"",p:4}
+    ],
+    r:{t:"Доверие к сообщениям от знакомых",d:"Именно так заходили в этом кругу: ссылка приходит с уже угнанного аккаунта друга. Страница выглядит как настоящая, и вы сами отдаёте доступ.",a:"Правило одного звонка: любая ссылка или просьба о деньгах от знакомого подтверждается голосом."}
+  },
+  {
+    q:"Вам звонят из «службы безопасности» и говорят, что с вашим аккаунтом или счётом происходит подозрительное. Как вы себя поведёте?",
+    sub:"",
+    o:[
+      {t:"Положу трубку и перезвоню сам по официальному номеру",d:"",p:0},
+      {t:"Выслушаю, но код и пароль не назову",d:"",p:2},
+      {t:"Зависит от разговора — бывает убедительно",d:"",p:4}
+    ],
+    r:{t:"Уязвимость к разговору под давлением",d:"Второй известный случай в кругу — человек назвал пароль по телефону под хорошо разыгранный сценарий. Работает не техника, а спешка и авторитет.",a:"Железное правило семьи: коды и пароли не называются никому и никогда, разговор всегда прерывается и начинается с вашего звонка."}
+  },
+  {
+    q:"Как защищён ваш основной аккаунт — Apple ID или Google?",
+    sub:"Через него восстанавливаются почта, фото, заметки и доступ к остальным сервисам.",
+    o:[
+      {t:"Двухфакторная защита, доступы и коды восстановления проверены",d:"",p:0},
+      {t:"Двухфакторная есть, но что в резервных способах — не помню",d:"",p:3},
+      {t:"Только пароль",d:"",p:5}
+    ],
+    r:{t:"Главный аккаунт — единая точка отказа",d:"Захватив его, злоумышленник не взламывает остальное: он просто восстанавливает пароли через вашу почту. Часто через резервный адрес, о котором вы давно забыли.",a:"Проверить резервную почту и телефон, убрать чужие и старые, включить двухфакторную защиту."}
+  },
+  {
+    q:"Где хранится seed-фраза от криптокошелька?",
+    sub:"12 или 24 слова, выданные при создании кошелька.",
+    o:[
+      {t:"Только офлайн — бумага или металл, вне дома",d:"",p:0},
+      {t:"Офлайн, но дома и в одном экземпляре",d:"",p:2},
+      {t:"В заметках, фото, мессенджере или облаке",d:"",p:6},
+      {t:"Криптой не пользуюсь",d:"",p:0,skip:true}
+    ],
+    r:{t:"Seed-фраза в цифровом виде",d:"Холодный кошелёк не поможет, если фраза лежит в заметках или на фото. Захват почты или телефона автоматически означает потерю всех активов, без возможности вернуть.",a:"Перенести фразу на физический носитель, удалить все цифровые копии, а при сомнениях — перевести активы на новый кошелёк."}
+  },
+  {
+    q:"Каким VPN вы пользуетесь?",
+    sub:"",
+    o:[
+      {t:"Собственный сервер или платный сервис с репутацией",d:"",p:0},
+      {t:"Платный, но не помню какой — настраивали за меня",d:"",p:2},
+      {t:"Бесплатный из магазина приложений или присланный ссылкой",d:"",p:5},
+      {t:"Не пользуюсь",d:"",p:1}
+    ],
+    r:{t:"VPN, которому не стоит доверять",d:"Бесплатный VPN живёт за счёт данных пользователей: весь ваш трафик проходит через чужой сервер. Для переписки и банковских приложений это худший из возможных вариантов.",a:"Перейти на собственный или проверенный платный сервис. Это недорого и делается за вечер."}
+  },
+  {
+    q:"У кого ещё есть доступ к вашей почте, календарю или документам?",
+    sub:"Помощник, водитель, бухгалтер, сотрудники, члены семьи.",
+    o:[
+      {t:"Доступ выдан персонально и с ограничениями, я знаю у кого",d:"",p:0},
+      {t:"Мой пароль знают несколько человек — так проще в работе",d:"",p:5},
+      {t:"Доступ оставался у тех, кто со мной уже не работает",d:"",p:6},
+      {t:"Ни у кого",d:"",p:0,skip:true}
+    ],
+    r:{t:"Общие пароли и забытые доступы",d:"Помощник с вашим паролем — это не только вопрос доверия: его телефон взламывают вместо вашего. А доступ уволенного сотрудника обычно никто не отзывает.",a:"Перевести всех на персональные доступы с ограниченными правами и отозвать доступы тех, кто больше не работает."}
+  },
+  {
+    q:"Насколько разведены рабочее и личное — устройства, почта, мессенджеры, документы?",
+    sub:"Речь о том, лежат ли договоры и рабочая переписка на том же устройстве и в том же аккаунте, что семейные фото и личные чаты.",
+    o:[
+      {t:"Разведены: отдельные устройства или отдельные профили и аккаунты",d:"",p:0},
+      {t:"Устройство одно, но рабочее хотя бы в отдельном аккаунте",d:"",p:2},
+      {t:"Всё вместе: почта, документы, мессенджеры, семейный архив",d:"",p:4}
+    ],
+    r:{t:"Личное и рабочее в одном контуре",d:"Один заражённый ноутбук — и вместе с личными фото уходят договоры, переписка и доступы к бизнесу. Чаще всего вход происходит через самое слабое звено: детское или домашнее устройство.",a:"Развести контуры: рабочее — на отдельном устройстве или в отдельном профиле, без общих паролей."}
+  },
+  {
+    q:"Используете ли вы один и тот же пароль в нескольких местах?",
+    sub:"Включая варианты одного пароля с цифрой на конце.",
+    o:[
+      {t:"Нет, у каждого сервиса свой — в менеджере паролей",d:"",p:0},
+      {t:"Основные разные, во второстепенных повторяются",d:"",p:3},
+      {t:"Да, несколько привычных паролей на всё",d:"",p:5}
+    ],
+    r:{t:"Повторное использование паролей",d:"Базы утёкших паролей продаются годами. Один старый форум — и тот же пароль пробуют в вашей почте, облаке и на бирже. Это делается автоматически, вас никто специально не выбирает.",a:"Менеджер паролей и смена паролей в критичных сервисах: почта, банк, крипта, Telegram."}
+  },
+  {
+    q:"Телефон остался в такси и уже не вернётся. Что это означает для вас?",
+    sub:"",
+    o:[
+      {t:"Неприятно, но не критично: есть свежая копия и второй способ входа в аккаунты",d:"",p:0},
+      {t:"Копия вроде бы делается, но когда и что в неё попадает — не знаю",d:"",p:3},
+      {t:"Потеряю фото, переписку и часть доступов безвозвратно",d:"",p:5}
+    ],
+    r:{t:"Нет проверенных резервных копий",d:"Резервная копия, которую никогда не восстанавливали, — это не копия. Особенно если она лежит в том же аккаунте, доступ к которому вы потеряете вместе с телефоном.",a:"Настроить копии по правилу «три копии, два носителя, одна вне дома» и один раз проверить восстановление."}
+  },
+  {
+    q:"Есть ли у вас второй или старый телефон — для поездок, банков, рабочих чатов?",
+    sub:"Часто на нём остаётся привязка к банку или резервный номер для восстановления аккаунтов.",
+    o:[
+      {t:"Есть, и он настроен так же серьёзно, как основной",d:"Обновления, пароль на экран, двухфакторная защита",p:0},
+      {t:"Есть, но давно без обновлений — лежит в ящике или в машине",d:"",p:5},
+      {t:"Старые телефоны отдал детям, помощнику или родителям",d:"Аккаунты с них не выходил",p:5},
+      {t:"Нет, пользуюсь одним",d:"",p:0,skip:true}
+    ],
+    r:{t:"Забытый телефон с живыми доступами",d:"Старый аппарат без обновлений — такой же вход в вашу жизнь, как основной: на нём остаются сессии, привязанный номер и коды подтверждения. При этом он лежит в ящике, в машине или уже у другого человека.",a:"Найти все старые устройства, выйти из аккаунтов, снять привязку номеров и либо обновить, либо стереть полностью."}
+  },
+  {
+    q:"Что произойдёт, если в салоне связи перевыпустят вашу SIM-карту на другого человека?",
+    sub:"Код из SMS начнёт приходить ему: это один из самых частых способов добраться до банков и аккаунтов.",
+    o:[
+      {t:"У оператора стоит запрет на перевыпуск без личного визита",d:"Критичные аккаунты не зависят от SMS",p:0},
+      {t:"Знаю о такой возможности, но ничего не настраивал",d:"",p:4},
+      {t:"Впервые об этом слышу",d:"",p:5}
+    ],
+    r:{t:"Номер телефона как главный ключ",d:"Перевыпуск SIM делается по поддельной доверенности или через сотрудника салона. Дальше злоумышленнику достаточно кодов из SMS, чтобы войти в банк, почту и мессенджеры.",a:"Поставить у оператора запрет на действия без личного присутствия и перевести вход в критичные сервисы с SMS на приложение или ключ."}
+  },
+  {
+    q:"Стоит ли PIN-код на самой SIM-карте?",
+    sub:"Тот, который запрашивается при включении телефона или при перестановке карты в другой аппарат.",
+    o:[
+      {t:"Да, PIN стоит и отличается от заводского",d:"",p:0},
+      {t:"Стоит заводской — 0000 или 1234",d:"",p:4},
+      {t:"Отключил, чтобы не вводить каждый раз",d:"",p:5},
+      {t:"Не знаю, не проверял",d:"",p:4}
+    ],
+    r:{t:"SIM-карта без PIN-кода",d:"Украденный или потерянный телефон — это не только устройство: карту вынимают и ставят в другой аппарат. Дальше приходят ваши SMS с кодами подтверждения, и никакой пароль на экране этому не мешает.",a:"Включить PIN на SIM и сменить заводской. Вводится он только при перезагрузке, неудобства почти нет."}
+  },
+  {
+    q:"Домашний Wi-Fi: кто знает пароль и кто настраивал роутер?",
+    sub:"Через домашнюю сеть видно всё: рабочий ноутбук, камеры, умный дом, устройства детей.",
+    o:[
+      {t:"Пароль уникальный, для гостей и умного дома — отдельная сеть",d:"",p:0},
+      {t:"Пароль знают все, кто бывал в доме, сеть одна на всех",d:"Гости, подрядчики, няня, гувернантка",p:4},
+      {t:"Роутер настраивал провайдер или мастер, с тех пор не трогали",d:"Пароль администратора, скорее всего, заводской",p:5}
+    ],
+    r:{t:"Домашняя сеть как общий вход",d:"Заводской пароль администратора роутера подбирается за секунды, а дальше весь домашний трафик проходит через чужие руки. Камеры и умный дом в одной сети с рабочим ноутбуком превращают любое слабое устройство в вход к вашим документам.",a:"Сменить пароль администратора роутера, обновить прошивку и вынести гостей, детей и умный дом в отдельную сеть."}
+  },
+  {
+    q:"Что можно узнать о вас и вашей семье из открытых источников?",
+    sub:"Телефон, адрес, состав семьи, школа детей, утёкшие пароли.",
+    o:[
+      {t:"Проверял это специально, лишнее убрал",d:"",p:0},
+      {t:"Примерно представляю, но целенаправленно не искал",d:"",p:3},
+      {t:"Никогда об этом не задумывался",d:"",p:4}
+    ],
+    r:{t:"Открытый цифровой след",d:"Любая адресная атака начинается со сбора данных: номер, окружение, привычки, школа детей. Это же основа для убедительного звонка «из банка» или сообщения от имени знакомого.",a:"Проверить утечки и открытые данные о себе и семье, убрать лишнее и закрыть публичные профили."}
+  },
+  {
+    q:"Вы поняли, что аккаунт угнали. Кому вы позвоните в первый час?",
+    sub:"",
+    o:[
+      {t:"Есть конкретный человек, который этим займётся",d:"",p:0},
+      {t:"Буду искать знакомого айтишника",d:"",p:3},
+      {t:"Начну разбираться сам, по статьям в интернете",d:"",p:5}
+    ],
+    r:{t:"Нет единой точки обращения",d:"В первый час решается, останется ли это неприятностью или станет ущербом. Обычно это время уходит на поиск того, кто вообще способен помочь.",a:"Определить, кому вы звоните при инциденте, и держать этот контакт отдельно от телефона."}
+  }
+];
+
+let i=0, ans=[];
+
+function start(){ document.getElementById('intro').classList.add('hidden'); document.getElementById('quiz').classList.remove('hidden'); render(); }
+function render(){
+  const q=Q[i];
+  document.getElementById('step').textContent='Вопрос '+(i+1)+' из '+Q.length;
+  document.getElementById('qtext').textContent=q.q;
+  const sub=document.getElementById('qsub'); sub.textContent=q.sub||''; sub.style.display=q.sub?'block':'none';
+  document.getElementById('bar').style.width=(i/Q.length*100)+'%';
+  const box=document.getElementById('opts'); box.innerHTML='';
+  q.o.forEach((o,n)=>{
+    const b=document.createElement('button'); b.className='opt';
+    b.innerHTML='<b>'+o.t+'</b>'+(o.d?'<span>'+o.d+'</span>':'');
+    b.onclick=()=>pick(n); box.appendChild(b);
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function pick(n){ ans[i]=n; i++; if(i<Q.length) render(); else finish(); }
+function back(){
+  if(i>0){ i--; render(); }
+  else { document.getElementById('quiz').classList.add('hidden'); document.getElementById('intro').classList.remove('hidden'); window.scrollTo({top:0}); }
+}
+
+function finish(){
+  document.getElementById('quiz').classList.add('hidden');
+  document.getElementById('result').classList.remove('hidden');
+  let pts=0, max=0, risks=[], goods=0;
+  Q.forEach((q,n)=>{
+    const o=q.o[ans[n]];
+    const worst=Math.max(...q.o.map(x=>x.p));
+    if(!o.skip) max+=worst;
+    pts+=o.p;
+    if(o.p>=4) risks.push({q,lvl:'high',p:o.p});
+    else if(o.p>0) risks.push({q,lvl:'mid',p:o.p});
+    else goods++;
+  });
+  const score=Math.max(0,Math.round(100-(pts/Math.max(max,1))*100));
+  let lvl,sub,col;
+  if(score>=80){lvl='Базовая защита выстроена';sub='Основное закрыто. Уязвимости остались в деталях — обычно именно в них и заходят.';col='#5fb98b';}
+  else if(score>=50){lvl='Защита частичная';sub='Что-то сделано, но системы нет: несколько открытых дверей ведут ко всему остальному.';col='#e0a95f';}
+  else {lvl='Высокий уровень риска';sub='Сейчас достаточно одного удачного сообщения или звонка, чтобы вы потеряли доступ к деньгам и переписке.';col='#df7264';}
+
+  document.getElementById('lvl').textContent=lvl;
+  document.getElementById('lvlsub').textContent=sub;
+  const arc=document.getElementById('arc'); arc.setAttribute('stroke',col);
+  setTimeout(()=>{arc.style.strokeDashoffset=289-(289*score/100);},60);
+  let cur=0; const t=setInterval(()=>{cur+=Math.max(1,Math.round(score/28)); if(cur>=score){cur=score;clearInterval(t);} document.getElementById('score').textContent=cur;},28);
+
+  risks.sort((a,b)=>b.p-a.p);
+  const top=risks.slice(0,5);
+  const box=document.getElementById('risks');
+  box.innerHTML = top.length ? '<div class="sect">Первое, чем стоит заняться</div>' : '';
+  top.forEach(r=>{
+    const d=document.createElement('div'); d.className='risk'+(r.lvl==='mid'?' mid':'');
+    d.innerHTML='<b>'+r.q.r.t+'</b><p>'+r.q.r.d+'</p><div class="do"><i>→</i><span>'+r.q.r.a+'</span></div>';
+    box.appendChild(d);
+  });
+  const g=document.getElementById('goods');
+  g.innerHTML = goods ? '<div class="sect">Что у вас уже в порядке</div><div class="good"><i>✓</i><span>По '+goods+' из '+Q.length+' пунктов вы отвечаете так, как это делают люди с выстроенной защитой. Это хорошая база — её имеет смысл достроить, а не начинать с нуля.</span></div>' : '';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function again(){ i=0; ans=[]; document.getElementById('result').classList.add('hidden'); document.getElementById('intro').classList.remove('hidden'); window.scrollTo({top:0}); }
+</script>
+</body>
+</html>
