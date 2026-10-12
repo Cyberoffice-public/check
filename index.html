@@ -131,6 +131,15 @@ h1{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-size:clam
 .cta ul{margin:0 0 4px;padding-left:18px;color:var(--muted);font-size:14px}
 .cta li{margin-bottom:4px}
 .foot{margin-top:30px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;line-height:1.6}
+.onote{display:none}
+.opt.sel .onote:not(:empty){display:block;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.08);font-size:13.5px;font-weight:400;line-height:1.45}
+.opt.sel.g .onote{color:#a9dcc0} .opt.sel.y .onote{color:#ecc996} .opt.sel.r .onote{color:#f0b0a6}
+.fbl{margin:4px 0 6px}
+.fbi{border-radius:11px;padding:10px 14px;font-size:14px;margin-bottom:7px;border-left:3px solid}
+.fbi b{display:block;font-size:12.5px;font-weight:600;opacity:.85;margin-bottom:3px}
+.fbi.g{background:rgba(95,185,139,.1);color:#a9dcc0;border-color:var(--ok)}
+.fbi.y{background:rgba(224,169,95,.1);color:#ecc996;border-color:var(--mid)}
+.fbi.r{background:rgba(223,114,100,.11);color:#f0b0a6;border-color:var(--bad)}
 
 .lvlbig{font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin:0 0 6px}
 .imp{font-size:13px;color:var(--muted);margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
@@ -350,7 +359,7 @@ function draw(){
 }
 function btn(id,i,text,cl,single){
   const b=document.createElement('button'); b.className='opt'; b.dataset.k=i; b.dataset.c=cl;
-  b.innerHTML='<b>'+text+'</b><em class="mk"></em>';
+  b.innerHTML='<b>'+text+'</b><span class="onote"></span><em class="mk"></em>';
   b.onclick=()=>{
     let a=new Set(ans[id]||[]);
     if(single){ a = a.has(i) ? new Set() : new Set([i]); }
@@ -363,17 +372,16 @@ function btn(id,i,text,cl,single){
   return b;
 }
 function refresh(id){
-  const a=(ans[id]||[]).map(String); let worst=-1, note='';
+  const a=(ans[id]||[]).map(String);
   document.querySelectorAll('#opts .opt').forEach(b=>{
     const on=a.includes(b.dataset.k), c=b.dataset.c==='x'?'g':b.dataset.c;
     b.className='opt'+(on?' sel '+c:'');
     b.querySelector('.mk').textContent = on ? (c==='r'?'★':c==='y'?'!':'✓') : '';
-    if(on && id!=='router'){ const o=Q[id].o[+b.dataset.k]; if(o.lv==='x') return; const r=RISK[o.lv];
-      if(r>worst){ worst=r; note=o.n; } }
+    const nt=b.querySelector('.onote'); nt.textContent='';
+    if(on && id!=='router'){ const o=Q[id].o[+b.dataset.k];
+      if(o.lv!=='x') nt.textContent = c==='r' ? '★ Критический риск: что может произойти и как защититься - в персональных рекомендациях.' : o.n; }
   });
-  const fb=document.getElementById('fb'), col=worst<0?null:COLOR(worst);
-  if(col && col!=='r' && note){ fb.className='fb '+col; fb.textContent=note; } else { fb.className='fb'; fb.textContent=''; }
-  document.getElementById('lg').classList.toggle('on', col==='r');
+  document.getElementById('fb').className='fb';
   document.getElementById('nx').disabled = a.length===0;
 }
 function next(){ if(idx+1<seq.length){ idx++; draw(); window.scrollTo({top:0}); } else finish(); }
