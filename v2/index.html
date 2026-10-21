@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Проверка цифровой безопасности</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f1622; --bg2:#151f30; --card:#182234; --line:#27354b;
+  --text:#eef2f8; --muted:#9fb0c6; --accent:#c8a86b; --accent2:#e2c88f;
+  --ok:#5fb98b; --mid:#e0a95f; --bad:#df7264;
+  box-sizing:border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+*{box-sizing:border-box}
+html{scroll-padding-top: env(safe-area-inset-top, 0px);}
+body{margin:0;background:radial-gradient(1100px 600px at 80% -10%, #1d2a40 0%, transparent 60%),var(--bg);
+  color:var(--text);font-family:'Manrope',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:720px;margin:0 auto;padding:28px 20px 56px}
+.brand{display:flex;align-items:center;gap:10px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.brand i{width:7px;height:7px;border-radius:50%;background:var(--accent);display:block}
+h1{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-size:clamp(28px,6.2vw,42px);line-height:1.12;margin:22px 0 14px}
+.lead{color:var(--muted);font-size:16px;max-width:56ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 22px}
+.chip{border:1px solid var(--line);border-radius:999px;padding:7px 13px;font-size:13px;color:var(--muted)}
+.btn{appearance:none;border:0;cursor:pointer;font-family:inherit;font-weight:600;font-size:16px;
+  background:linear-gradient(180deg,var(--accent2),var(--accent));color:#1b1608;border-radius:12px;padding:15px 24px;width:100%;
+  transition:transform .12s ease,filter .12s ease,opacity .2s;display:block;text-align:center}
+.btn:hover{filter:brightness(1.05)}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.35;cursor:default;filter:none;transform:none}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+.note{font-size:13px;color:var(--muted);margin-top:14px;display:flex;gap:9px;align-items:flex-start}
+.note svg{flex:0 0 auto;margin-top:2px}
+.card{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--line);border-radius:18px;padding:22px}
+.progress{height:3px;background:var(--line);border-radius:2px;overflow:hidden;margin-bottom:20px}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0;transition:width .35s ease}
+.step{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.q{font-size:19.5px;font-weight:600;line-height:1.35;margin:0 0 6px}
+.qsub{color:var(--muted);font-size:14px;margin:0 0 16px}
+.multi{font-size:12.5px;color:var(--accent);margin:-8px 0 14px}
+.opt{position:relative;display:block;width:100%;text-align:left;background:#1a2537;border:1px solid var(--line);color:var(--text);
+  border-radius:13px;padding:13px 40px 13px 16px;margin-bottom:9px;font:inherit;cursor:pointer;transition:border-color .15s,background .15s}
+.opt:hover{border-color:#3a4c68}
+.opt b{display:block;font-weight:600;font-size:15px}
+.opt span{display:block;color:var(--muted);font-size:13px;margin-top:3px}
+.opt.sel.g{border-color:var(--ok);background:rgba(95,185,139,.12)}
+.opt.sel.y{border-color:var(--mid);background:rgba(224,169,95,.12)}
+.opt.sel.r{border-color:var(--bad);background:rgba(223,114,100,.13)}
+.opt.sel.i{border-color:var(--accent);background:rgba(200,168,107,.12)}
+.opt .mk{position:absolute;right:14px;top:13px;font-size:16px;font-weight:700}
+.opt.sel.g .mk{color:var(--ok)} .opt.sel.y .mk{color:var(--mid)} .opt.sel.r .mk{color:var(--bad)} .opt.sel.i .mk{color:var(--accent)}
+.fb{display:none;border-radius:11px;padding:11px 14px;font-size:14px;margin:4px 0 6px}
+.fb.g{display:block;background:rgba(95,185,139,.1);color:#a9dcc0}
+.fb.y{display:block;background:rgba(224,169,95,.1);color:#ecc996}
+.fb.r{display:block;background:rgba(223,114,100,.11);color:#f0b0a6}
+.legend{display:none;font-size:12.5px;color:var(--muted);margin:8px 0 2px}
+.legend.on{display:block}
+.legend b{color:var(--bad)}
+.nav{display:flex;gap:10px;margin-top:14px}
+.nav .btn{flex:1}
+.nav .bk{flex:0 0 auto;width:auto;padding:15px 18px}
+.hidden{display:none}
+.grp{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px}
+.grp:first-child{margin-top:0}
+
+.sc{position:relative;display:block;width:100%;text-align:left;background:#172130;border:1px solid var(--line);color:var(--text);
+  border-radius:14px;padding:14px 44px 14px 16px;margin-bottom:9px;font:inherit;cursor:pointer;transition:border-color .15s,background .15s}
+.sc:hover{border-color:#3a4c68}
+.sc b{display:block;font-size:15px;font-weight:600;margin-bottom:3px}
+.sc span{display:block;color:var(--muted);font-size:13.5px;line-height:1.45}
+.sc .mk{position:absolute;right:15px;top:14px;width:20px;height:20px;border:1.5px solid var(--line);border-radius:6px}
+.sc.sel{border-color:var(--accent);background:rgba(200,168,107,.1)}
+.sc.sel .mk{background:var(--accent);border-color:var(--accent)}
+.sc.sel .mk:after{content:"✓";color:#1b1608;font-size:13px;font-weight:700;position:absolute;left:4px;top:0}
+.sc.none{background:transparent;border-style:dashed}
+
+.story .lab{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.story h2{font-family:'Cormorant Garamond',Georgia,serif;font-size:29px;font-weight:600;line-height:1.15;margin:0 0 12px}
+.story p{color:var(--muted);font-size:15px;margin:0 0 12px}
+.story .how{border-left:2px solid var(--bad);background:#1a2436;border-radius:0 10px 10px 0;padding:12px 15px;margin:4px 0 18px}
+.story .how b{display:block;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--bad);margin-bottom:4px}
+.story .how p{margin:0;font-size:14px}
+
+.thesis{border-left:2px solid var(--bad);background:#1a2436;border-radius:0 10px 10px 0;padding:12px 15px;margin:18px 0 6px}
+.thesis b{display:block;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--bad);margin-bottom:4px}
+.thesis p{margin:0;font-size:14px;color:var(--muted)}
+
+.dial{display:flex;align-items:center;gap:20px;margin-bottom:6px}
+.ring{position:relative;flex:0 0 auto;width:104px;height:104px}
+.ring svg{transform:rotate(-90deg)}
+.ring .val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring .val b{font-size:26px;font-weight:700;line-height:1}
+.ring .val span{font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:3px}
+.lvl{font-family:'Cormorant Garamond',Georgia,serif;font-size:28px;font-weight:600;line-height:1.15;margin:0 0 6px}
+.lvl-sub{color:var(--muted);font-size:14px;margin:0}
+.counts{display:flex;gap:10px;margin-top:16px}
+.counts div{flex:1;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13px;color:var(--muted)}
+.counts b{display:block;font-size:22px;line-height:1.1}
+.counts .r b{color:var(--bad)} .counts .y b{color:var(--mid)} .counts .g b{color:var(--ok)}
+.sect{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:26px 0 12px}
+.brow{margin-bottom:11px}
+.brow .t{display:flex;justify-content:space-between;font-size:14px;margin-bottom:5px}
+.brow .t span{color:var(--muted);font-size:13px}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:3px;transition:width .8s ease}
+.gate{margin-top:24px;border:1px solid var(--accent);border-radius:18px;padding:22px;background:linear-gradient(180deg,#1f2a3d,#172131)}
+.gate h3{font-family:'Cormorant Garamond',Georgia,serif;font-size:25px;font-weight:600;margin:0 0 8px}
+.gate p{color:var(--muted);font-size:14px;margin:0 0 14px}
+.gate input{width:100%;background:#121b29;border:1px solid var(--line);border-radius:12px;padding:14px 15px;color:var(--text);font:inherit;font-size:16px;margin-bottom:10px;outline:none}
+.gate input:focus{border-color:var(--accent)}
+.gate small{display:block;color:var(--muted);font-size:12px;margin-top:10px}
+.risk{border:1px solid var(--line);border-left:3px solid var(--bad);border-radius:12px;padding:14px 16px;margin-bottom:10px;background:#1a2436}
+.risk.y{border-left-color:var(--mid)}
+.risk b{display:block;font-size:15px;margin-bottom:4px}
+.risk b em{font-style:normal;color:var(--bad);margin-right:6px}
+.risk p{margin:0;color:var(--muted);font-size:14px}
+.risk .do{margin-top:9px;color:var(--text);font-size:14px;display:flex;gap:8px}
+.risk .do i{color:var(--accent);font-style:normal}
+.tip{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:12px;padding:14px 16px;margin-bottom:10px;background:#1a2436}
+.tip b{display:block;font-size:15px;margin-bottom:4px}
+.tip p{margin:0;color:var(--muted);font-size:14px}
+.cta{margin-top:24px;background:linear-gradient(180deg,#1c2942,#16202f);border:1px solid var(--line);border-radius:18px;padding:22px}
+.cta h3{font-family:'Cormorant Garamond',Georgia,serif;font-size:24px;font-weight:600;margin:0 0 8px}
+.cta p{color:var(--muted);font-size:14px;margin:0 0 10px}
+.cta ul{margin:0 0 4px;padding-left:18px;color:var(--muted);font-size:14px}
+.cta li{margin-bottom:4px}
+.foot{margin-top:30px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;line-height:1.6}
+.onote{display:none}
+.opt.sel .onote:not(:empty){display:block;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.08);font-size:13.5px;font-weight:400;line-height:1.45}
+.opt.sel.g .onote{color:#a9dcc0} .opt.sel.y .onote{color:#ecc996} .opt.sel.r .onote{color:#f0b0a6}
+.fbl{margin:4px 0 6px}
+.fbi{border-radius:11px;padding:10px 14px;font-size:14px;margin-bottom:7px;border-left:3px solid}
+.fbi b{display:block;font-size:12.5px;font-weight:600;opacity:.85;margin-bottom:3px}
+.fbi.g{background:rgba(95,185,139,.1);color:#a9dcc0;border-color:var(--ok)}
+.fbi.y{background:rgba(224,169,95,.1);color:#ecc996;border-color:var(--mid)}
+.fbi.r{background:rgba(223,114,100,.11);color:#f0b0a6;border-color:var(--bad)}
+
+.lvlbig{font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin:0 0 6px}
+.imp{font-size:13px;color:var(--muted);margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+.brow .t span.nc{color:var(--muted);font-style:italic}
+.recc{border:1px solid var(--line);border-left:3px solid var(--bad);border-radius:12px;padding:14px 16px;margin-bottom:10px;background:#1a2436}
+.recc.y{border-left-color:var(--mid)}
+.recc b{display:block;font-size:15px;margin-bottom:4px}
+.recc b em{font-style:normal;color:var(--bad);margin-right:6px}
+.recc p{margin:0;color:var(--text);font-size:14px}
+.recc small{display:block;margin-top:7px;color:var(--muted);font-size:13px}
+.sitq{font-family:'Cormorant Garamond',Georgia,serif;font-size:24px;font-weight:600;margin:24px 0 12px}
+.gate .err{color:var(--bad)}
+.rsec{border:1px solid var(--line);border-radius:14px;background:#1a2436;margin-bottom:12px;overflow:hidden}
+.rsec summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:600;font-size:16px}
+.rsec summary::-webkit-details-marker{display:none}
+.rsec summary .pc{font-size:13px;font-weight:700;border-radius:20px;padding:3px 10px;white-space:nowrap}
+.rsec summary .ch{color:var(--muted);font-size:12px;margin-left:6px;transition:transform .2s}
+.rsec[open] summary .ch{transform:rotate(180deg)}
+.rsec .rb{padding:0 16px 14px}
+.rsec h4{margin:6px 0 8px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.rk{border-left:3px solid var(--bad);background:rgba(223,114,100,.08);border-radius:8px;padding:9px 12px;margin-bottom:8px;font-size:14px;line-height:1.45}
+.rk.y{border-left-color:var(--mid);background:rgba(224,169,95,.08)}
+.rk b{display:block;font-size:14px;margin-bottom:2px}.rk b em{font-style:normal;color:var(--bad);margin-right:5px}.rk.y b em{color:var(--mid)}
+.rk .sc2{margin-top:7px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.rk .scl{margin:4px 0 0;padding-left:16px;font-size:13.5px;color:#c9d2df}.rk .scl li{margin-bottom:4px}
+.rk .mine{font-size:13px;color:var(--muted);font-style:italic;margin:2px 0 6px}
+.allok{border:1px solid var(--accent);border-radius:12px;padding:14px 16px;margin:0 0 12px;background:#1a2436}.allok b{display:block;font-size:15px;margin-bottom:6px;color:var(--text)}.allok p{margin:0 0 8px;font-size:14px}.allok ul{margin:0 0 8px;padding-left:18px;font-size:14px;color:var(--text)}.allok li{margin-bottom:4px}
+.okline{color:#a9dcc0;font-size:14px;margin:0 0 10px}
+.how{margin:0;padding:0;list-style:none}.how li{position:relative;padding-left:22px;margin-bottom:8px;font-size:14px;line-height:1.45;color:var(--text)}
+.how li:before{content:"✓";position:absolute;left:0;top:0;color:var(--ok);font-weight:700}
+.next{border:1px dashed var(--accent);border-radius:12px;padding:12px 14px;color:var(--muted);font-size:14px;margin:4px 0 0}
+.next b{color:var(--text)}
+h1 small{display:block;font-family:'Manrope',sans-serif;font-size:15px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+
+:root{color-scheme:dark}
+.opt.sel.i{border-color:var(--accent);background:rgba(200,168,107,.12)}
+.qtop{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.qtop .tm{font-size:12px;color:var(--muted);white-space:nowrap}
+.sitq{font-family:'Cormorant Garamond',Georgia,serif;font-size:24px;font-weight:600;margin:24px 0 12px}
+.resume{border:1px solid var(--accent);border-radius:14px;padding:14px 16px;margin:18px 0 0;background:#1a2436}
+.resume p{margin:0 0 10px;font-size:14px}
+.resume .row{display:flex;gap:10px}.resume .row .btn{padding:12px 14px;font-size:15px}
+.hl{font-family:'Cormorant Garamond',Georgia,serif;font-size:30px;font-weight:600;line-height:1.15;margin:0 0 8px}
+.hsub{color:var(--muted);font-size:14px;margin:0}
+.counts{display:flex;gap:10px;margin-top:16px}
+.counts div{flex:1;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13px;color:var(--muted)}
+.counts b{display:block;font-size:22px;line-height:1.1}
+.counts .r b{color:var(--bad)} .counts .y b{color:var(--mid)} .counts .g b{color:var(--ok)}
+.selfnote{font-size:12.5px;color:var(--muted);margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+.main{border:1px solid var(--bad);border-radius:16px;padding:18px;background:rgba(223,114,100,.07);margin-top:16px}
+.main.y{border-color:var(--mid);background:rgba(224,169,95,.07)}
+.main .lab0{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--bad);font-weight:700;margin-bottom:6px}
+.main.y .lab0{color:var(--mid)}
+.main b.t{display:block;font-size:17px;margin-bottom:6px}
+.main p{margin:0 0 8px;font-size:14px}
+.throw{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:11px 14px;margin-bottom:8px;background:#1a2436;font-size:15px}
+.chipst{font-size:12.5px;font-weight:700;border-radius:20px;padding:3px 10px;white-space:nowrap;border:1px solid}
+.chipst.r{color:var(--bad);border-color:var(--bad)} .chipst.y{color:var(--mid);border-color:var(--mid)} .chipst.g{color:var(--ok);border-color:var(--ok)} .chipst.n{color:var(--muted);border-color:var(--line)}
+.stepc{border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px;background:#1a2436}
+.stepc .sh{display:flex;gap:10px;align-items:flex-start;margin-bottom:6px}
+.stepc .num{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#1b1608;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center}
+.stepc .sh b{font-size:15.5px;line-height:1.35;padding-top:2px}
+.stepc .mine{font-size:13px;color:var(--muted);font-style:italic;margin:0 0 8px 36px}
+.stepc p{margin:0 0 8px 36px;font-size:14px;line-height:1.45}
+.stepc .lab{display:block;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:2px}
+.stepc .done{display:flex;gap:9px;align-items:center;margin:10px 0 0 36px;font-size:14px;color:var(--text);cursor:pointer}
+.stepc .done input{width:18px;height:18px;accent-color:#5fb98b}
+.stepc.ok{border-color:var(--ok)}
+.chs{display:flex;gap:8px;margin:0 0 10px;flex-wrap:wrap}
+.chs button{flex:1;min-width:90px;appearance:none;background:#121b29;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px;font:inherit;font-size:14px;cursor:pointer}
+.chs button.on{border-color:var(--accent);background:rgba(200,168,107,.14)}
+.cons{display:flex;gap:9px;align-items:flex-start;font-size:13px;color:var(--muted);margin:2px 0 12px;cursor:pointer}
+.cons input{margin-top:2px;width:17px;height:17px;flex:0 0 auto}
+.gate .err{color:var(--bad)}
+.rsec{border:1px solid var(--line);border-radius:14px;background:#1a2436;margin-bottom:12px;overflow:hidden}
+.rsec summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:600;font-size:16px}
+.rsec summary::-webkit-details-marker{display:none}
+.rsec .rb{padding:0 16px 14px}
+.rsec h4{margin:6px 0 8px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.rk{border-left:3px solid var(--bad);background:rgba(223,114,100,.08);border-radius:8px;padding:9px 12px;margin-bottom:8px;font-size:14px;line-height:1.45}
+.rk.y{border-left-color:var(--mid);background:rgba(224,169,95,.08)}
+.rk b{display:block;font-size:14px;margin-bottom:2px}
+.rk .sc2{margin-top:7px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.rk .scl{margin:4px 0 0;padding-left:16px;font-size:13.5px;color:#c9d2df}.rk .scl li{margin-bottom:4px}
+.rk .mine{font-size:13px;color:var(--muted);font-style:italic;margin:2px 0 6px}
+.okline{color:#a9dcc0;font-size:14px;margin:0 0 10px}
+.how{margin:0;padding:0;list-style:none}.how li{position:relative;padding-left:22px;margin-bottom:8px;font-size:14px;line-height:1.45;color:var(--text)}
+.how li:before{content:"✓";position:absolute;left:0;top:0;color:var(--ok);font-weight:700}
+.thanks{color:#a9dcc0;font-size:15px;margin:0}
+.btnrow{display:flex;gap:10px;margin-top:18px}.btnrow .btn{flex:1}
+.pains{display:grid;gap:9px;margin:6px 0 4px}
+.pain{border:1px solid var(--line);border-left:3px solid var(--bad);border-radius:0 12px 12px 0;padding:12px 15px;background:#1a2436}
+.pain b{display:block;font-size:15px;line-height:1.35;margin-bottom:4px}
+.pain span{display:block;color:var(--muted);font-size:13.5px;line-height:1.45}
+.forwho{border:1px solid var(--accent);border-radius:16px;padding:16px;margin:22px 0 0;background:#1a2436}
+.forwho h3,.prod h3{font-family:'Cormorant Garamond',Georgia,serif;font-size:24px;font-weight:600;margin:0 0 6px}
+.forwho p{color:var(--muted);font-size:14px;margin:0 0 12px}
+.pf{position:relative;display:block;width:100%;text-align:left;background:#172130;border:1px solid var(--line);color:var(--text);border-radius:12px;padding:11px 40px 11px 14px;margin-bottom:7px;font:inherit;font-size:14.5px;cursor:pointer}
+.pf .mk{position:absolute;right:13px;top:11px;width:18px;height:18px;border:1.5px solid var(--line);border-radius:5px}
+.pf.sel{border-color:var(--accent);background:rgba(200,168,107,.1)}
+.pf.sel .mk{background:var(--accent);border-color:var(--accent)}
+.pf.sel .mk:after{content:"✓";color:#1b1608;font-size:12px;font-weight:700;position:absolute;left:3px;top:-1px}
+.pfnote{font-size:13.5px;margin:8px 0 0;color:var(--muted)}
+.pfnote b{color:var(--accent2)}
+.prod{border:1px solid var(--line);border-radius:16px;padding:16px;margin:18px 0 0;background:linear-gradient(180deg,#1c2942,#16202f)}
+.prod ul{margin:0 0 10px;padding-left:18px;color:var(--text);font-size:14px}.prod li{margin-bottom:5px}
+.prod .lab{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:10px 0 6px}
+.price{display:inline-block;margin-top:4px;font-weight:700;color:var(--accent2)}
+.t10wrap{overflow-x:auto;margin:6px 0 4px}
+.t10{width:100%;border-collapse:collapse;font-size:13.5px}
+.t10 th{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;text-align:center;padding:6px 4px;border-bottom:1px solid var(--line)}
+.t10 th:first-child{text-align:left}
+.t10 td{padding:8px 4px;border-bottom:1px solid var(--line);vertical-align:middle}
+.t10 td.c{text-align:center;width:58px;font-weight:700;font-size:15px}
+.t10 .y{color:var(--ok)} .t10 .n{color:var(--bad)} .t10 .u{color:var(--muted)}
+.t10 tfoot td{border-bottom:0;font-weight:700;color:var(--text);padding-top:10px}
+.t10note{font-size:12.5px;color:var(--muted);margin:6px 0 0}
+@media print{
+ body{background:#fff!important;color:#111!important}
+ .wrap{max-width:none;padding:0}
+ #intro,#flow,#help,.btnrow,.stepc .done input{display:none!important}
+ .card,.stepc,.throw,.main,.rsec,.gate{background:#fff!important;border-color:#bbb!important;color:#111!important;break-inside:avoid}
+ .hsub,.selfnote,.stepc .mine,.stepc .lab,.foot,.how li,.rk,.throw{color:#333!important}
+ details.rsec{display:block}
+}
+</style>
+</head><body>
+<div class="wrap">
+
+<section id="intro">
+  <div class="brand"><i></i> Проверка цифровой безопасности</div>
+  <h1>Насколько Вы уверены в безопасности своих активов и личных данных?</h1>
+  <p class="lead">Опасность не в незнании, а в уверенности, что Вы разбираетесь. Мошенники рассчитывают именно на это - и на людей из Вашего близкого круга.</p>
+  <div id="resume" class="resume hidden"><p id="resumetxt"></p><div class="row"><button class="btn" onclick="resume()">Продолжить</button><button class="btn ghost" onclick="again()">Начать заново</button></div></div>
+  <div class="pains" id="pains"></div>
+
+  <div class="forwho">
+    <h3>Для кого эта проверка</h3>
+    <p>Для тех, у кого активов, счетов и криптокошельков стало больше, а защиты - нет. Отметьте, что про Вас: вопросы будут касаться актуальных для Вас сфер жизни.</p>
+    <div id="pflist"></div>
+    <p class="pfnote" id="pfnote"></p>
+  </div>
+
+  <button class="btn" id="go" style="margin-top:18px" onclick="begin()">Начать проверку</button>
+  <div class="note">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9fb0c6" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V6l8-4z"/></svg>
+    <span>Ответы обрабатываются и сохраняются только в Вашем браузере - можно прерваться и продолжить позже.</span>
+  </div>
+  <div class="note">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9fb0c6" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+    <span>Мы никогда не просим пароли, коды из SMS, данные банковских карт и не просим устанавливать программы удалённого доступа. Если кто-то просит это от нашего имени - перед Вами мошенники.</span>
+  </div>
+
+  <div class="prod">
+    <h3>Что Вы получите</h3>
+    <div class="lab">Сейчас, бесплатно, без регистрации</div>
+    <ul><li>проверку за 6-7 минут;</li><li>главный риск и короткий план, что исправить в первую очередь;</li><li>сравнение: что у Вас уже настроено, а что срочно требует внимания.</li></ul>
+    <div class="lab">Далее наш специалист поможет Вам исправить все выявленные пробелы</div>
+    <ul><li><b>Базовая настройка</b>: наши опытные специалисты пройдут с Вами все этапы настройки по индивидуальному плану;</li><li>в итоге все базовые меры защиты реализованы у Вас и Вашей семьи;</li><li>без передачи паролей и без программ удалённого доступа.</li></ul>
+    <div id="pricebox"></div>
+  </div>
+
+  <div class="sect">Как это выглядит у большинства людей, которым есть что терять</div>
+  <div class="t10wrap"><table class="t10" id="t10intro"></table></div>
+  <p class="t10note">«Обычно» - типичная картина по нашему опыту у людей, которые считают себя защищёнными.</p>
+
+  <button class="btn" style="margin-top:18px" onclick="begin()">Начать проверку</button>
+</section>
+
+<section id="flow" class="hidden">
+  <div class="progress"><i id="bar"></i></div>
+  <div class="card" id="pane"></div>
+</section>
+
+<section id="result" class="hidden">
+  <div class="brand"><i></i> Ваш результат</div>
+  <div class="card" style="margin-top:18px">
+    <p class="hl" id="hl"></p>
+    <p class="hsub" id="hsub"></p>
+    <div class="counts">
+      <div class="r"><b id="cr">0</b>критических</div>
+      <div class="y"><b id="cy">0</b>требуют внимания</div>
+      <div class="g"><b id="cg">0</b>в порядке</div>
+    </div>
+    <div class="selfnote">Это оценка по Вашим ответам, а не проверка Ваших устройств и аккаунтов. Общий балл мы не ставим: один критический риск может перечеркнуть всё остальное.</div>
+  </div>
+
+  <div id="main"></div>
+
+  <div class="sect">По темам</div>
+  <div id="themes"></div>
+
+  <div class="sect">У Вас и у большинства людей, которым есть что терять</div>
+  <div class="t10wrap"><table class="t10" id="t10res"></table></div>
+  <p class="t10note" id="t10sum"></p>
+
+  <div class="sect" id="planh">Ваш план</div>
+  <div id="plan"></div>
+
+  <div class="gate" id="help">
+    <h3>Нужна помощь с настройкой?</h3>
+    <p>Базовая настройка: наши опытные специалисты пройдут с Вами все этапы настройки по индивидуальному плану - и все базовые меры защиты будут реализованы у Вас и Вашей семьи. Все действия Вы выполняете на своих устройствах. Мы не просим пароли и коды и никогда не просим устанавливать программы удалённого доступа.</p>
+    <p id="helpprice" style="margin-top:-6px"></p>
+    <p style="margin-bottom:8px">Как с Вами удобнее связаться?</p>
+    <div class="chs" id="chs"><button data-c="tg" onclick="pickCh('tg')">Telegram</button><button data-c="phone" onclick="pickCh('phone')">Телефон</button><button data-c="email" onclick="pickCh('email')">E-mail</button></div>
+    <input id="cval" placeholder="Выберите способ связи" disabled>
+    <label class="cons"><input type="checkbox" id="cons"> <span>Согласен(на) на обработку указанного контакта, чтобы со мной связались по этому запросу.</span></label>
+    <button class="btn" onclick="sendHelp()">Связаться со мной</button>
+    <small id="hh">Нужен только один контакт и только для ответа на этот запрос. Ваш план остаётся на этой странице.</small>
+  </div>
+
+  <div class="sect">Подробный разбор</div>
+  <div id="details"></div>
+
+  <div class="btnrow"><button class="btn ghost" id="prn" onclick="printPlan()">Сохранить план (PDF)</button><button class="btn ghost" onclick="again()">Пройти заново</button></div>
+  <div class="foot">Результат проверки носит ознакомительный характер и не заменяет проверку настроек Ваших устройств и аккаунтов специалистом.</div>
+</section>
+
+</div>
+<script>
+const VER='v23', KEY='cyberon_check_'+VER;
+const PROFILE = [{"id": "biz", "t": "Свой бизнес или руководящая роль"}, {"id": "banks", "t": "Деньги в нескольких банках, в том числе за рубежом"}, {"id": "crypto", "t": "Криптовалюта на бирже или в кошельке"}, {"id": "staff", "t": "Помощник, водитель, няня или горничная"}, {"id": "abroad", "t": "Часто бываю за границей и плачу разными картами"}, {"id": "kids", "t": "Дети с телефонами, планшетами и играми"}, {"id": "nopwd", "t": "Нет единой системы хранения паролей"}];
+const PAINS = [{"t": "Жене пришло сообщение о доставке, которую никто не ждал. Она продиктовала «код отмены» - и с Вашего общего счёта ушли 3 млн ₽", "s": "Код был не для отмены доставки, а для входа в банк. Перевод сделан «с подтверждением владельца» - вернуть его почти невозможно."}, {"t": "Нажали не на ту ссылку - и Telegram с перепиской с партнёрами у мошенников", "s": "От Вашего имени просят деньги у друзей и коллег, а переписку используют для давления."}, {"t": "iPhone потерялся, он был под паролем - а деньги со счетов всё равно украли", "s": "Код подсмотрели заранее или вставили SIM-карту в другой телефон и получили коды из SMS."}, {"t": "Почту взломали, хотя стояла двухфакторная защита - и с криптобиржи вывели почти всё", "s": "Коды из SMS перехватили через перевыпуск SIM-карты. Перевод в криптовалюте не отменить."}, {"t": "Помощник оплатил «срочный счёт» по голосовому сообщению от Вашего имени", "s": "Голос подделал ИИ, а сообщение пришло с захваченного аккаунта."}];
+const BASE10 = [{"t": "Код блокировки из 6+ цифр и биометрия на телефоне", "typ": 1, "q": "dev_phone", "good": ["6 и более цифр"], "bad": ["не заблокирован", "Код от телефона знают", "Не знаю, как сейчас"]}, {"t": "«Найти iPhone» или «Найти устройство» с удалённой блокировкой", "typ": 1, "q": "dev_phone", "good": ["Найти iPhone"], "bad": []}, {"t": "Уведомления обо всех операциях по счетам и картам", "typ": 1, "q": null, "good": [], "bad": []}, {"t": "Второй фактор для входа в почту и аккаунты", "typ": 0, "q": "acc_main", "good": ["другое моё устройство или приложение", "passkey"], "bad": ["Только пароль", "Честно не знаю", "приходит на мой основной телефон", "что делать, если потеряю"]}, {"t": "Менеджер паролей: генерация, безопасное хранение и автозаполнение", "typ": 0, "q": "pwd_reuse", "good": ["менеджере паролей"], "bad": ["привычных паролей", "по одной схеме", "Не знаю, сколько", "помощник", "заметках"]}, {"t": "Почту можно восстановить без основного телефона", "typ": 0, "q": "acc_recover", "good": ["несколько способов"], "bad": ["Не уверен", "Не знаю", "другому человеку", "действующий номер"]}, {"t": "Облачный пароль в Telegram", "typ": 0, "q": null, "good": [], "bad": []}, {"t": "Самозапрет на кредиты и займы", "typ": 0, "q": "bank_ban", "good": ["самозапрет установлен", "Установил себе"], "bad": ["не устанавливал", "Впервые", "не знаю, действует", "Не хочу"]}, {"t": "Отдельная карта для покупок и поездок", "typ": 0, "q": "bank_card", "good": ["небольшую сумму", "нет денег", "виртуальную"], "bad": ["основные деньги", "несколько своих", "разными картами", "Не знаю, есть ли"]}, {"t": "PIN-код на SIM-карте и защита номера от перевыпуска", "typ": 0, "q": null, "good": [], "bad": []}, {"t": "Отдельная гостевая сеть Wi-Fi для гостей и персонала", "typ": 0, "q": "dev_who", "good": [], "bad": ["основному Wi-Fi"]}];
+const PRICE = "от 30 000 ₽";
+const THEMES = [{"id": "money", "t": "Деньги и мошенничество", "short": "Деньги", "qs": ["bank_call", "bank_card", "bank_ban"], "cond": [{"flag": "crypto", "id": "money_crypto"}]}, {"id": "access", "t": "Пароли, почта и доступ", "short": "Пароли и почта", "qs": ["pwd_reuse", "acc_main", "acc_recover"]}, {"id": "family", "t": "Дети, семья и устройства", "short": "Семья и устройства", "qs": ["dev_phone", "dev_who", "dev_shared"], "kids": "dev_kids"}, {"id": "msg", "t": "Мессенджеры, ссылки и соцсети", "short": "Мессенджеры", "qs": ["msg_link", "msg_code"]}, {"id": "data", "t": "Личные данные, ИИ и подделки", "short": "Данные и ИИ", "qs": ["ai_voice", "doc_send", "ai_data"], "cond": [{"flag": "staff", "id": "doc_assist"}]}];
+const QS = {"bank_call": {"id": "bank_call", "q": "Вам звонят «из банка», где лежат Ваши основные деньги или деньги компании, и говорят, что мошенники прямо сейчас пытаются вывести средства. Чтобы их защитить, предлагают срочно перевести всё на «безопасный» счёт. Что Вы сделаете?", "sub": "Мошенники часто создают ощущение срочности и убеждают человека самому перевести деньги якобы для их защиты. Настоящий банк не просит переводить деньги на «безопасный», «резервный» или «защитный» счёт.", "rl": "Разговор с «сотрудником банка» по входящему звонку", "ra": "Не выполняйте инструкции звонящего: завершите разговор и сами позвоните в банк по номеру из официального приложения. Банк никогда не просит переводить деньги на «безопасный» счёт.", "o": [["Переведу деньги, если звонящий знает моё имя, банк и другие мои данные", "vh", "Эти данные могли попасть к мошенникам из утечек. В результате человек своими руками переводит деньги злоумышленнику."], ["Переведу деньги, если мне пришлют подтверждение от банка в SMS или мессенджер", "vh", "Сообщение, номер отправителя, документ или логотип банка могут быть подделаны. Мошенники используют их, чтобы усилить доверие."], ["Продолжу разговор и попрошу сотрудника подробно объяснить, что происходит", "h", "Чем дольше продолжается разговор, тем больше возможностей у мошенника убедить, запугать человека или получить дополнительную информацию."], ["Завершу разговор и сам позвоню в банк по номеру из официального мобильного приложения банка", "l", "Вы прекращаете контакт с неизвестным собеседником и самостоятельно связываетесь с банком через проверенный канал."], ["Сам открою приложение банка и проверю счета, кредиты, заявки и операции", "l", "Проверка происходит непосредственно в официальном сервисе банка, без выполнения инструкций звонящего."], ["Ничего переводить не буду, пока самостоятельно не проверю информацию", "l", "Вы не позволяете срочности заставить Вас совершить финансовое действие."]], "single": true, "first": true, "chk": "У Вас и близких есть правило: звонок «из банка» - кладём трубку и сами звоним по номеру из приложения банка. Вы знаете, где в приложении номер поддержки и чат.", "th": "money"}, "bank_card": {"id": "bank_card", "q": "Какой картой Вы платите в интернете и в поездках?", "sub": "Данные карты, которой Вы платите в отелях, магазинах и сервисах по всему миру, рано или поздно попадают в утечки. Безопаснее, когда эта карта не связана с основными деньгами.", "rl": "Использование основной или накопительной карты для покупок в сети", "ra": "Заведите отдельную или виртуальную карту для покупок в интернете и не храните на ней основную сумму денег.", "o": [["Использую ту же карту, на которой храню основные деньги и получаю доход", "vh", "Если данные карты или доступ к ней попадут к злоумышленнику, под угрозой сразу оказывается значительная сумма денег."], ["Использую несколько своих обычных карт - какая окажется удобнее в момент покупки", "h", "Данные нескольких карт постепенно распространяются по большому числу магазинов и сервисов."], ["Для покупок в интернете у меня отдельная карта, но деньги на ней хранятся постоянно", "m", "Основной счёт отделён, но при компрометации карты можно потерять всю сумму, которая на ней находится."], ["Для интернет-покупок использую отдельную карту и держу на ней только небольшую сумму", "l", "Даже если данные карты попадут злоумышленнику, возможный ущерб ограничен."], ["На отдельной карте обычно нет денег. Перевожу нужную сумму непосредственно перед покупкой", "vl", "Один из самых безопасных бытовых вариантов: большую часть времени на карте нечего похищать."], ["Использую отдельную виртуальную карту с лимитами на покупки в интернете", "vl", "Отдельная карта и ограничения по сумме уменьшают возможный ущерб, даже если её данные будут скомпрометированы."], ["Не знаю, есть ли у моего банка возможность отдельной или виртуальной карты", "mh", "Вы не используете один из простых способов разделить основные деньги и интернет-покупки."], ["В поездках за границей плачу разными картами, в том числе основной", "h", "Данные основной карты оказываются в отелях, ресторанах и сервисах по всему миру - и рано или поздно в утечках."], ["Не покупаю в интернете", "x", ""]], "single": true, "first": false, "chk": "Для покупок в интернете - отдельная или виртуальная карта, на ней только небольшая сумма. Основная карта удалена из магазинов и сервисов.", "th": "money"}, "bank_ban": {"id": "bank_ban", "q": "Установили ли Вы самозапрет на оформление кредитов и займов на Ваше имя?", "sub": "Самозапрет бесплатно ставится через Госуслуги. Пока он действует, на Вас не оформят большинство кредитов и займов. Чем выше Ваш доход и кредитный рейтинг, тем крупнее суммы, которые мошенники могут оформить по Вашим данным.", "rl": "Отсутствие защиты от оформления «тайных» кредитов мошенниками", "ra": "Установите бесплатный самозапрет на кредиты и займы через Госуслуги и расскажите о нём близким.", "o": [["Да, самозапрет установлен", "l", "Даже если мошенники получат паспортные данные или доступ к части Ваших аккаунтов, оформить на Вас большинство кредитов будет значительно сложнее."], ["Слышал о самозапрете, но пока не устанавливал", "m", "Защитной меры нет. Если персональные данные попадут к мошенникам, остаётся риск попытки оформить кредит или заём."], ["Впервые слышу о такой возможности", "mh", "Вы не используете доступную бесплатную защиту."], ["Устанавливал, но потом снял и сейчас не знаю, действует ли он", "h", "Можно ошибочно считать себя защищённым. Статус самозапрета можно бесплатно проверить через Госуслуги или МФЦ."], ["Не хочу устанавливать: думаю, что без моего личного визита кредит всё равно не оформят", "h", "Это ложное чувство безопасности. Часть финансовых продуктов оформляется дистанционно - поэтому самозапрет и существует как дополнительный барьер."], ["Установил себе и рассказал близким, чтобы они тоже проверили эту возможность", "l", "Защита распространяется не только на Вас: Вы снижаете риск мошенничества и для семьи."]], "single": true, "first": false, "chk": "На Госуслугах в разделе самозапрета на кредиты стоит статус «Установлен». Близкие проверили у себя то же самое.", "th": "money"}, "money_crypto": {"id": "money_crypto", "q": "Как защищена Ваша криптовалюта?", "sub": "Перевод в криптовалюте отменить нельзя. Чаще всего её крадут не через биржу, а через почту, SIM-карту и сид-фразу, сохранённую на телефоне или в облаке. Выберите всё, что про Вас.", "rl": "Криптовалюта без надёжной защиты", "ra": "Сид-фразу уберите из телефона, облака и переписки - только на бумаге или металле в надёжном месте. На бирже включите вход через приложение-аутентификатор или ключ и вывод только на заранее разрешённые адреса. Основную сумму держите на аппаратном кошельке.", "o": [["Сид-фраза или ключи хранятся в заметках, на фото, в облаке или в переписке", "vh", "Кто получит доступ к телефону или облаку, выведет всё. Вернуть криптовалюту невозможно."], ["Вход на биржу - по паролю и коду из SMS", "h", "Код из SMS перехватывают через перевыпуск SIM-карты - и выводят средства."], ["Биржа привязана к той же почте, что и всё остальное", "h", "Взлом основной почты открывает сброс пароля на бирже."], ["Вход на биржу - через приложение-аутентификатор или ключ, вывод только на заранее разрешённые адреса", "l", "Даже узнав пароль, злоумышленник не выведет средства на свой адрес."], ["Основная сумма - на аппаратном кошельке, сид-фраза на бумаге или металле в надёжном месте", "vl", "Ключи не хранятся ни на одном устройстве, подключённом к интернету."], ["Не знаю, насколько защищена моя криптовалюта", "h", "Нельзя оценить, через что её могут вывести."]], "single": false, "first": false, "chk": "Сид-фразы нет ни в телефоне, ни в облаке, ни в переписке. Вход на биржу требует приложение-аутентификатор, вывод разрешён только на сохранённые адреса.", "th": "money"}, "pwd_reuse": {"id": "pwd_reuse", "q": "Используете ли Вы один и тот же пароль в разных сервисах - от интернет-магазинов до банков, бирж и рабочей почты?", "sub": "Даже похожие пароли, где меняется только цифра или символ, считаются повторяющимися.", "rl": "Несколько привычных паролей в разных местах", "ra": "Не используйте один пароль в нескольких сервисах - начните с почты, банков и мессенджеров.", "o": [["Да, у меня есть несколько привычных паролей, которые использую в разных местах", "vh", "Если один сервис будет взломан и пароль утечёт, злоумышленники попробуют его в почте, соцсетях, банках и других аккаунтах."], ["Нет, для каждого сервиса у меня свой пароль, они хранятся в менеджере паролей", "l", "Один из самых безопасных вариантов, если сам менеджер защищён сильным мастер-паролем и двухфакторной защитой."], ["Не знаю, сколько у меня паролей и где какие используются", "h", "Нет контроля над паролями - нельзя даже понять, сколько раз один пароль повторяется."], ["Для важных аккаунтов пароли разные, а на менее важных сайтах иногда повторяются", "m", "Основные аккаунты защищены лучше, но утечки со второстепенных сайтов всё равно дают злоумышленникам полезную информацию."], ["Пароли разные, но я придумываю их по одной схеме - меняю цифру, название сайта или несколько символов", "h", "Узнав один пароль, злоумышленник может понять схему и подобрать остальные."], ["Пароли мне создаёт и хранит помощник или другой человек", "h", "Безопасность Ваших аккаунтов зависит от другого человека и от того, как он хранит эти пароли."], ["Часть паролей храню в заметках, сообщениях, таблице или записной книжке", "mh", "Получив доступ к этому месту, посторонний сразу получит доступ к нескольким аккаунтам."]], "single": false, "first": false, "chk": "У почты, банков, мессенджеров, Госуслуг и аккаунта Apple или Google - разные пароли. Проверка паролей в менеджере паролей, в приложении «Пароли» на iPhone или в Google не показывает повторов.", "th": "access"}, "acc_main": {"id": "acc_main", "q": "Как защищён Ваш основной аккаунт Apple, Google или Samsung?", "sub": "Через этот аккаунт открываются телефон, фото документов, резервные копии и сохранённые пароли, а часто и доступ к банкам, бирже и рабочим сервисам.", "rl": "Лёгкий доступ мошенников к Вашему профилю Apple или Google", "ra": "Включите двухфакторную защиту через приложение-аутентификатор или passkey и заранее настройте запасной способ восстановления, не зависящий от основного телефона.", "o": [["Только пароль", "h", "Если пароль станет известен злоумышленнику, дополнительного барьера может не быть. Особенно опасно, если похожий пароль используется в других сервисах."], ["Есть двухфакторная защита: ввожу пароль, а код приходит на мой основной телефон", "m", "Значительно безопаснее одного пароля. Но если телефон потерян, украден или злоумышленник получит контроль над номером, второй способ защиты может оказаться недоступен."], ["Есть двухфакторная защита через другое моё устройство или приложение-аутентификатор", "l", "Для входа недостаточно знать пароль - нужно подтверждение на Вашем устройстве или одноразовый код из приложения."], ["Использую passkey или физический ключ безопасности", "vl", "Вход подтверждается через Ваше устройство (Face ID, отпечаток, код) или физический ключ. Такие способы хорошо защищают и от многих видов фишинга."], ["Если потеряю основной телефон, у меня есть другой способ вернуть доступ: другой мой номер, другая почта или другое моё устройство", "l", "Потеря одного телефона не означает потерю аккаунта, если запасной способ действительно принадлежит Вам."], ["Двухфакторная защита есть, но что делать, если потеряю телефон, я не знаю", "mh", "Аккаунт защищён, но при потере устройства восстановить доступ может быть сложно именно в тот момент, когда он нужен срочно."], ["Честно не знаю, как сейчас защищён мой аккаунт", "h", "Нельзя быть уверенным, включена ли дополнительная защита, какие устройства имеют доступ и получится ли восстановить аккаунт при взломе или потере телефона."]], "single": false, "first": false, "chk": "При входе в аккаунт Apple или Google с нового устройства запрашивается подтверждение. Вы знаете, как вернуть доступ, если потеряете основной телефон.", "th": "access"}, "acc_recover": {"id": "acc_recover", "q": "Если Ваша основная почта - через которую восстанавливаются банки, биржи и рабочие сервисы - перестанет открываться, сможете ли Вы сами вернуть доступ?", "sub": "Через почту восстанавливаются пароли от большинства других сервисов. Важно, чтобы способы восстановления были актуальными и принадлежали именно Вам.", "rl": "Отсутствие надёжного способа восстановить почту", "ra": "Проверьте, сможете ли Вы восстановить почту без основного телефона, и уберите из настроек чужие и устаревшие номера и адреса.", "o": [["Да, у меня есть несколько способов вернуть доступ - мой номер телефона и другая почта или устройство", "l", "Есть несколько независимых способов, поэтому потеря одного канала не заблокирует доступ полностью."], ["Да, код для входа придёт на мой действующий номер телефона", "m", "Восстановление зависит только от телефона и SIM-карты. Если телефон потерян, украден или номер перехвачен, это становится проблемой."], ["Да, код можно получить на другую мою почту", "m", "Безопасность зависит от того, насколько хорошо защищена эта вторая почта и есть ли к ней реальный доступ."], ["Для восстановления код придёт не мне, а другому человеку", "h", "Восстановление зависит от третьего лица. Если он недоступен, его аккаунт взломан или отношения изменились, Вы можете потерять доступ."], ["Не уверен, давно это не проверял", "h", "Способы восстановления могут быть устаревшими: старый номер, недоступная почта или устройство, которого уже нет."], ["Не знаю, как буду восстанавливать доступ", "vh", "При блокировке или взломе можно полностью потерять почту, а через неё - и другие аккаунты."]], "single": false, "first": false, "chk": "В настройках почты указаны только Ваши действующие номер и резервная почта. Резервные коды записаны и хранятся отдельно от телефона.", "th": "access"}, "dev_phone": {"id": "dev_phone", "q": "Представьте, что телефон украли, а в нём пять банков, рабочая почта, доступ к ЭДО и криптокошелёк. Как он защищён?", "sub": "Через телефон восстанавливаются почти все аккаунты: коды из SMS, почта, мессенджеры. Выберите всё, что про Вас.", "rl": "Телефон без надёжной защиты от посторонних", "ra": "Поставьте код из 6 и более цифр и отпечаток или Face ID, никому не сообщайте код, включите «Найти iPhone» или «Найти устройство» и автоматические обновления. Приложения устанавливайте только из официальных магазинов.", "o": [["Телефон не заблокирован или защищён простым кодом: 1234, дата рождения, графический ключ", "vh", "Найденный или украденный телефон откроется сразу: банк, почта, мессенджеры и коды из SMS окажутся у постороннего."], ["Код от телефона знают близкие или помощник, или я часто ввожу его при других людях", "h", "Кто знает код, тот может открыть телефон, а через него - Ваши аккаунты и сохранённые пароли."], ["Телефон закрыт кодом из 6 и более цифр или паролем, плюс отпечаток или Face ID", "l", "Посторонний не откроет телефон, даже если он окажется у него в руках."], ["Включена функция «Найти iPhone» или «Найти устройство»: телефон можно заблокировать или стереть удалённо", "l", "При потере или краже Вы сможете быстро заблокировать телефон и защитить данные."], ["Обновления системы устанавливаются автоматически или я ставлю их сразу", "l", "Обновления закрывают уязвимости, через которые взламывают телефоны."], ["Откладываю обновления системы месяцами", "mh", "Телефон остаётся уязвимым для уже известных способов взлома."], ["Устанавливаю приложения по ссылкам из сообщений, с сайтов или из файлов", "h", "Так чаще всего попадают программы, которые читают SMS и уведомления и подтверждают переводы без Вас. Исключение - приложения банков с их официальных сайтов, адрес которых Вы набрали сами."], ["Не знаю, как сейчас защищён мой телефон", "h", "Нельзя быть уверенным, что при потере или краже посторонний не откроет телефон."]], "single": false, "first": false, "chk": "Телефон просит код или отпечаток сразу после блокировки, код никто не знает. В «Найти iPhone» или «Найти устройство» телефон виден на карте, в настройках включены автоматические обновления.", "th": "family"}, "dev_who": {"id": "dev_who", "q": "Кто ещё пользуется Вашими устройствами, аккаунтами или домашним Wi-Fi?", "sub": "Если устройством, аккаунтом или общей сетью пользуется кто-то ещё, его действия тоже могут повлиять на Ваши данные, деньги и доступы. Выберите всё, что подходит.", "rl": "Свободный доступ посторонних к Вашим гаджетам и Wi-Fi", "ra": "Разделите устройства и аккаунты членов семьи, а гостей подключайте к отдельной гостевой сети Wi-Fi.", "o": [["Только я. Другие люди моими устройствами и аккаунтами не пользуются", "l", "Цифровая среда хорошо разделена, риск через действия других людей ниже."], ["Супруг(а) или другие близкие иногда пользуются моим телефоном, компьютером или планшетом", "m", "Другой человек может случайно открыть опасную ссылку, установить программу, увидеть уведомления или получить доступ к сохранённым данным."], ["Дети пользуются моими устройствами или могут устанавливать на них игры и программы", "h", "Игры, моды, читы и программы из неизвестных источников могут привести к заражению устройства и краже данных.", "kids"], ["У нас есть общие аккаунты, облако, фотографии или семейный Apple/Google-аккаунт", "mh", "Компрометация одного аккаунта или устройства может затронуть данные нескольких членов семьи."], ["Все пользуются своими устройствами и аккаунтами, но подключаются к одной домашней Wi-Fi сети", "m", "Прямого общего доступа может не быть, но плохо защищённое устройство в общей сети всё равно может стать дополнительной точкой риска."], ["Гости, горничная, мастера или гости на званом ужине подключаются к нашему основному Wi-Fi", "m", "Чужие телефоны в основной сети - лишняя точка риска для Ваших компьютеров, камер и умных устройств. Гостей лучше подключать к отдельной гостевой сети."], ["Не знаю, насколько наши устройства и аккаунты связаны между собой", "h", "Без понимания границ своей цифровой среды нельзя оценить, через кого ещё возможен доступ."], ["Помощник, водитель, няня или горничная пользуются моими устройствами или знают коды от них", "h", "Безопасность Ваших аккаунтов зависит от чужих привычек и чужого телефона. Персоналу лучше выдать отдельные устройства и доступы."]], "single": false, "first": false, "chk": "У каждого члена семьи своё устройство или профиль. Ваши банк и почта не открыты на чужих устройствах, гости подключаются к гостевой сети Wi-Fi.", "th": "family"}, "dev_shared": {"id": "dev_shared", "q": "Заходите ли Вы в банк, рабочую почту или мессенджеры с общих семейных или детских устройств?", "sub": "На общем устройстве могут сохраняться пароли, открытые аккаунты и файлы. Если другой человек установит программу, откроет опасную ссылку или просто получит доступ к Вашему профилю, под риском могут оказаться Ваши деньги и данные.", "rl": "Вход в личные и рабочие аккаунты с чужих или общих устройств", "ra": "Не входите в банк, почту и рабочие сервисы с общих устройств и не сохраняйте на них пароли.", "o": [["Никогда. Для важных аккаунтов использую только свои устройства", "l", "Ваши личные и рабочие аккаунты не пересекаются с устройствами других членов семьи."], ["Иногда пользуюсь общим устройством, но только через отдельный профиль и не сохраняю там пароли", "lm", "Разделение пользователей снижает риск, но устройство остаётся общим и может быть заражено программой, установленной другим человеком."], ["Иногда захожу, но после этого всегда выхожу из аккаунтов", "m", "Выход из аккаунта полезен, но браузер мог сохранить пароль, файлы, cookies или другую информацию."], ["Изредка захожу с общего устройства, когда моего нет под рукой", "mh", "Даже разовый вход может оставить данные авторизации или попасть на уже заражённое устройство."], ["На общем планшете или компьютере постоянно открыты мой банк, почта или мессенджер", "vh", "Любой, кто пользуется устройством, может получить доступ к переписке, банковским операциям, документам и другим аккаунтам."], ["Мои пароли сохранены в браузере на общем устройстве", "vh", "Если кто-то получит доступ к браузеру или устройству, он может увидеть или использовать сохранённые пароли."], ["Пользуюсь режимом «Инкогнито» и считаю, что этого достаточно", "h", "Режим «Инкогнито» не защищает от вредоносных программ, перехвата данных и доступа к самому устройству. Он лишь не сохраняет часть истории браузера."]], "single": false, "first": false, "chk": "На общих устройствах нет Ваших открытых аккаунтов и сохранённых паролей - это видно в настройках браузера и в списке сохранённых паролей.", "th": "family"}, "dev_kids": {"id": "dev_kids", "q": "Обсуждали ли Вы с ребёнком, какую информацию нельзя передавать людям из игр, Discord, Roblox и других онлайн-сервисов?", "sub": "Человек, с которым ребёнок давно играет или общается в интернете, может оказаться совсем не тем, за кого себя выдаёт. Фото, адрес, номер телефона, коды из сообщений, данные родителей и даже обычные фотографии из дома могут использоваться для обмана, взлома аккаунтов или давления на ребёнка. Ребёнок из обеспеченной семьи - отдельная цель: через него узнают адрес, распорядок дня и данные родителей.", "rl": "Отсутствие у ребёнка правил безопасности при общении в сети", "ra": "Договоритесь с ребёнком о простом правиле: любые просьбы прислать код, фото, деньги или что-то установить - сначала показать взрослому.", "o": [["Не обсуждали", "h", "Ребёнок может не понимать, какие данные опасно передавать, и воспринимать интернет-знакомого как обычного друга."], ["Ребёнок играет и общается онлайн, но я не знаю, с кем именно", "h", "Сложно вовремя заметить подозрительное знакомство или давление."], ["Говорили об этом, но не уверен, что ребёнок помнит и соблюдает правила", "m", "Базовое понимание есть, но в игре, под давлением или из любопытства ребёнок может поступить иначе."], ["Ребёнок знает, что нельзя отправлять незнакомым людям адрес, номер телефона, документы, коды из сообщений и данные родителей", "l", "Ребёнок знает основные границы и понимает, какие данные могут быть опасны."], ["У нас есть правило: если в игре или чате просят перейти по ссылке, отправить фото, код, деньги или что-то установить, ребёнок сначала показывает это взрослому", "vl", "Ребёнку не нужно самому определять, мошенник перед ним или нет - он просто знает понятный алгоритм действий."], ["Периодически обсуждаем новые ситуации и проверяем настройки приватности, друзей и доступы в играх и мессенджерах", "l", "Правила не остаются разовым разговором, а обновляются вместе с поведением ребёнка и сервисами."], ["Детей нет или они не пользуются онлайн-играми и такими сервисами", "x", ""]], "single": false, "first": false, "chk": "Ребёнок может сам повторить правило: любые просьбы прислать код, фото, деньги или что-то установить - сначала показать взрослому.", "th": "family"}, "msg_link": {"id": "msg_link", "q": "Знакомый или партнёр по бизнесу прислал ссылку: «проголосуй за мою компанию» или «держи подарок Premium». Что Вы сделаете?", "sub": "Даже если сообщение пришло от знакомого, его аккаунт мог быть взломан. Такие ссылки часто используют, чтобы получить доступ к Вашему аккаунту или данным.", "rl": "Переход по ссылкам от знакомых без проверки", "ra": "Проверяйте неожиданные ссылки звонком знакомому по сохранённому номеру - не в той же переписке.", "o": [["Перешлю ссылку жене, помощнику или знакомому", "h", "Риск не устраняется - Вы просто передаёте потенциально опасную ссылку другому человеку."], ["Открою ссылку, но ничего вводить не буду", "h", "Даже переход на поддельный сайт может быть небезопасным, а страница может подтолкнуть к следующему действию."], ["Проголосую, если это просьба знакомого - там же нужно только нажать кнопку", "vh", "Именно такие простые просьбы часто используют для кражи Telegram и других аккаунтов."], ["Открою ссылку на компьютере - там безопаснее, чем на телефоне", "h", "Опасная ссылка остаётся опасной независимо от устройства."], ["Позвоню знакомому или свяжусь с ним другим привычным способом и уточню, действительно ли он отправлял ссылку", "l", "Один из самых надёжных способов: Вы подтверждаете сообщение через другой канал связи."], ["Спрошу в той же переписке: «Это ты отправил?» - и, если он подтвердит, открою", "h", "Если аккаунт уже захвачен, злоумышленник сам ответит Вам и подтвердит сообщение."], ["Ничего не буду делать - просто проигнорирую сообщение", "l", "Вы не взаимодействуете с потенциально опасной ссылкой и не даёте продолжить сценарий атаки."], ["Открою только в отдельной изолированной среде («песочнице») и ничего не буду вводить", "m", "Изоляция снижает часть рисков, но не защищает, если на странице ввести номер телефона, код или пароль. Надёжнее всё равно уточнить у знакомого другим способом."]], "single": true, "first": true, "chk": "Вы и близкие проверяете неожиданные ссылки звонком по сохранённому номеру, а не в той же переписке.", "th": "msg"}, "msg_code": {"id": "msg_code", "q": "Вам приходит код для входа в Telegram, хотя Вы его не запрашивали. Затем кто-то пишет от имени «поддержки Telegram» и просит переслать этот код. Что Вы сделаете?", "sub": "Такой код может означать, что кто-то пытается войти в Ваш аккаунт. В Telegram - переписка с партнёрами, сотрудниками и семьёй: кто войдёт, сможет писать от Вашего имени им всем. Код для входа нельзя передавать никому.", "rl": "Опасность потерять доступ к своему аккаунту Telegram", "ra": "Включите дополнительный пароль для входа в Telegram и проверьте активные устройства. Код для входа не передавайте никому.", "o": [["Игнорирую сообщение и никому не сообщаю код", "m", "Код Вы не передали, но попытка входа уже была. Если ничего больше не проверить, можно не заметить чужую активную сессию или другие изменения в аккаунте."], ["Не знаю, что делать - код никому не передам и сразу обращусь к человеку, который разбирается", "l", "Хорошо, если у Вас есть человек, личный цифровой защитник, к которому можно быстро обратиться в такой ситуации."], ["Никому не передам код, сам зайду в настройки Telegram, проверю активные устройства, завершу незнакомые сеансы и включу дополнительный пароль для входа", "l", "Вы не взаимодействуете со злоумышленником и самостоятельно проверяете безопасность аккаунта через официальное приложение."], ["Отвечу «поддержке» и уточню, что произошло", "h", "Вы вступаете в диалог с потенциальным мошенником. Он может продолжить давление, прислать ссылку или убедить Вас выполнить другие действия."], ["Перешлю код - если это действительно Telegram, они разберутся", "vh", "Код может дать злоумышленнику возможность войти в Ваш аккаунт, получить доступ к переписке, контактам и писать другим людям от Вашего имени."], ["Сам открою Telegram и проверю, нет ли незнакомых устройств или входов, но ни по каким ссылкам из сообщения переходить не буду", "l", "Вы проверяете ситуацию через официальный сервис, а не через сообщение неизвестного человека."]], "single": true, "first": true, "chk": "В Telegram в разделе «Конфиденциальность» включён облачный пароль, а в разделе «Устройства» нет незнакомых сеансов.", "th": "msg"}, "ai_voice": {"id": "ai_voice", "q": "Вам звонит близкий знакомым голосом - например, сын из поездки за границей - и срочно просит перевести деньги. Что Вы сделаете?", "sub": "Голос человека сегодня можно достаточно убедительно подделать. Срочность, страх и просьба никому не звонить - повод сначала проверить, кто действительно с Вами говорит.", "rl": "Уязвимость к голосовому мошенничеству (вишингу) с использованием ИИ", "ra": "Договоритесь с близкими: любая срочная просьба о деньгах проверяется обратным звонком на сохранённый номер.", "o": [["Сразу помогу - голос же его", "vh", "Голос уже нельзя считать достаточным подтверждением личности."], ["Попрошу прислать голосовое или видео", "h", "Голос и видео также могут быть подделаны или отправлены с захваченного аккаунта."], ["Задам вопрос, ответ на который знаем только мы", "m", "Это дополнительная проверка, но часть личной информации злоумышленник может найти в переписке или соцсетях."], ["Перезвоню человеку сам по сохранённому у меня номеру", "l", "Вы сами начинаете новый контакт через привычный канал."], ["Свяжусь с ним другим способом или с человеком, который сейчас может быть рядом с ним", "l", "Это независимая проверка личности."], ["Ничего переводить не буду, пока сам не удостоверюсь, что это действительно он", "l", "Вы не позволяете срочности заставить Вас совершить перевод до проверки."]], "single": true, "first": true, "chk": "С близкими есть договорённость: срочная просьба о деньгах проверяется обратным звонком на сохранённый номер - и все её помнят.", "th": "data"}, "doc_send": {"id": "doc_send", "q": "Как Вы передаёте фото паспорта и других документов - банкам, отелям, нотариусу, помощнику?", "sub": "Копия документа остаётся у всех, кому Вы её отправили, - иногда на годы. Одного фото паспорта бывает достаточно для мошеннических звонков и попыток оформить услуги от Вашего имени.", "rl": "Фото документов в чатах, почте и у других людей", "ra": "Передавайте документы только через официальные сервисы, отправляйте лишь нужные страницы и удалите фото документов из чатов и переписок.", "o": [["Не помню, кому и куда отправлял", "h", "Невозможно понять, у кого сейчас могут храниться копии документов и где они оказались."], ["Отправлял в семейный или общий чат, и документы до сих пор там", "h", "Копии доступны всем участникам чата и могут остаться на нескольких устройствах."], ["Отправлял помощнику, сотруднику или родственнику, чтобы они что-то оформили за меня", "mh", "Документы оказываются ещё у одного человека и могут храниться у него после того, как задача выполнена."], ["Передавал только через официальные приложения и сайты, например Госуслуги или приложение банка", "l", "Наиболее безопасный способ, если Вы сами открыли официальное приложение и понимаете, зачем нужен документ."], ["Отправлял по просьбе «службы безопасности», менеджера или другого человека для подтверждения личности", "vh", "Так часто получают документы мошенники. Одного фото паспорта иногда достаточно для дальнейшей социальной инженерии."], ["Отправлял отелю, арендодателю, туроператору, службе доставки или другой организации через мессенджер", "mh", "Даже если организация настоящая, копия остаётся в переписке на чужом телефоне или компьютере."], ["Отправлял на электронную почту организации или сотрудника", "m", "Это может быть оправдано, но документ остаётся в почтовых ящиках отправителя и получателя, иногда на долгие годы."], ["Перед отправкой проверяю, кому и зачем нужен документ, и отправляю только необходимые страницы или данные", "l", "Вы осознанно ограничиваете количество передаваемой информации."], ["Фото и сканы документов в электронном виде не отправляю", "l", "Копий Ваших документов в чужих чатах и почте нет."]], "single": false, "first": false, "chk": "Поиск по чатам и почте по словам «паспорт» и «СНИЛС» не находит фото документов. Те, кому Вы их отправляли, удалили копии.", "th": "data"}, "ai_data": {"id": "ai_data", "q": "Что из личной и рабочей информации Вы отправляете в ChatGPT и другие ИИ-сервисы - договоры, отчёты, документы?", "sub": "ИИ удобно использовать для документов, писем и анализа, но важно понимать, какие данные Вы ему передаёте и можно ли их обезличить.", "rl": "Личные и рабочие данные в ИИ-сервисах", "ra": "Перед отправкой в ИИ убирайте имена, телефоны, реквизиты и документы - передавайте только то, что нужно для задачи.", "o": [["Могу отправить паспорт, банковские документы, пароли или другие данные как есть, если ИИ нужен для работы с ними", "vh", "В ИИ не стоит передавать секреты, пароли и данные, с помощью которых можно получить доступ к деньгам или аккаунтам."], ["Отправляю договоры, переписки и рабочие документы целиком", "h", "Внутри могут находиться персональные, коммерческие и конфиденциальные данные."], ["Перед отправкой убираю имена, телефоны, адреса, реквизиты и другую лишнюю личную информацию", "l", "Вы передаёте ИИ только то, что действительно нужно для задачи."], ["Иногда отправляю скриншоты и фотографии, не проверяя, что ещё на них видно", "h", "На изображении могут случайно оказаться номера, документы, сообщения, QR-коды и другая чувствительная информация."], ["Не знаю, что можно и нельзя отправлять ИИ", "h", "Нет понятного правила обращения с конфиденциальными данными."], ["Не пользуюсь ИИ-сервисами", "x", ""]], "single": false, "first": false, "chk": "В истории чатов с ИИ нет документов, паролей и реквизитов. Вы знаете, что убираете из текста перед отправкой.", "th": "data"}, "doc_assist": {"id": "doc_assist", "q": "Помощник получает от Вас голосовое: «Срочно оплати счёт поставщику». Как он должен убедиться, что просьба действительно от Вас?", "sub": "Голосовое сообщение, имя и фотография аккаунта уже не гарантируют, что пишет именно нужный человек. Для важных платежей лучше заранее договориться о простом правиле дополнительной проверки.", "rl": "Платежи помощника без дополнительного способа проверки", "ra": "Договоритесь с помощником: срочные и крупные платежи всегда подтверждаются звонком по известному номеру или вторым человеком.", "o": [["Позвонит мне по номеру, который уже сохранён у него, и подтвердит платёж голосом", "l", "Помощник сам начинает новый контакт через известный номер и не доверяет только сообщению в мессенджере."], ["У нас есть правило: все срочные платежи подтверждаются через другой канал связи", "l", "Даже если аккаунт будет взломан, одного сообщения будет недостаточно для перевода денег."], ["Крупные или необычные платежи должен дополнительно подтвердить ещё один человек", "l", "Ошибка или подделка запроса не приводит сразу к переводу - появляется второй независимый контроль."], ["Помощник попросит меня прислать письменное сообщение в том же мессенджере", "h", "Если аккаунт уже захвачен, злоумышленник напишет и текстом. Проверка идёт через тот же скомпрометированный канал."], ["Позвонит мне только в том случае, если что-то покажется подозрительным", "mh", "Хорошо подготовленный запрос может вообще не вызвать подозрений. Безопаснее проверять по правилу, а не по ощущениям."], ["Выполнит платёж - у нас обычно так и происходит", "vh", "Злоумышленнику достаточно получить доступ к аккаунту или убедительно подделать голос, чтобы инициировать перевод."], ["У нас есть заранее согласованный порядок: какие платежи можно делать без подтверждения, а какие всегда требуют дополнительной проверки", "l", "Помощнику не приходится каждый раз самому решать, доверять сообщению или нет - правила определены заранее."]], "single": false, "first": false, "chk": "У помощника есть правило: срочные и крупные платежи подтверждаются звонком по известному номеру или вторым человеком - и он его соблюдает, даже когда «очень срочно».", "th": "data"}};
+const RISK_TXT = {"bank_call": {"t": "Мошенники звонят от имени банка, называют Ваше имя и номер карты, пугают «подозрительной операцией» и торопят. Цель одна - чтобы Вы сами перевели деньги, назвали код или установили приложение. Переведённые так деньги вернуть почти невозможно: для банка операцию сделали Вы.", "s": ["«Служба безопасности» сообщает, что на Вас оформляют кредит, и просит перевести деньги на «безопасный счёт». Счёт принадлежит мошенникам - деньги уходят за минуты.", "Просят продиктовать код из SMS «для отмены операции». С этим кодом на Вас оформляют кредит или входят в Ваш банк.", "Просят установить «защитное» приложение. Через него видят экран телефона и сами проводят переводы."]}, "bank_card": {"t": "Данные карты, которой Вы платите в интернете, со временем оказываются у десятков магазинов и сервисов - и любой из них может их потерять. Если на этой карте основные деньги или накопления, украсть могут всё сразу, а вернуть списания через банк получается не всегда.", "s": ["Оплатили доставку или билеты на поддельном сайте - данные карты сразу уходят мошенникам.", "Магазин, где Вы когда-то покупали, взломали. Данные карты продают, и списания начинаются через несколько месяцев.", "Если это зарплатная карта, под ударом и деньги на ежедневные расходы, и автоплатежи."]}, "bank_ban": {"t": "Ваши паспортные данные почти наверняка уже есть в утечках. Без самозапрета по ним можно оформить онлайн-кредит или заём на Ваше имя - без Вашего ведома и без визита в офис.", "s": ["По фото паспорта из утечки берут онлайн-заём в микрофинансовой организации. Вы узнаёте о нём, когда звонят коллекторы.", "Долг приходится оспаривать через банк, полицию и суд - месяцами, а кредитная история уже испорчена."]}, "money_crypto": {"t": "Криптовалюту крадут через самые слабые звенья вокруг неё: почту, номер телефона и сид-фразу. Перевод в блокчейне необратим - ни банк, ни полиция его не отменят.", "s": ["Через перевыпуск SIM-карты получают коды из SMS, сбрасывают пароль почты, а затем и биржи - и выводят всё за ночь.", "Сид-фразу находят в фото или заметках в облаке после взлома аккаунта Apple или Google - кошелёк пустеет за минуты.", "Поддельное приложение кошелька или «служба поддержки» биржи просит ввести сид-фразу для «проверки»."]}, "pwd_reuse": {"t": "Один утёкший пароль открывает все сервисы, где он используется. Базы паролей с форумов, магазинов и приложений утекают постоянно - и Вы не узнаете, что Ваш пароль уже в одной из них.", "s": ["Утекла база форума или магазина - программа автоматически пробует пару «почта + пароль» в почте, Telegram и банках.", "Пароль ввели на поддельной странице одного сервиса - открылись все, где он повторяется.", "Через почту с тем же паролем восстанавливают остальные сервисы - и захват уже не остановить."]}, "acc_main": {"t": "Аккаунт Apple или Google - ключ ко всему телефону: фото, документам, сохранённым паролям, резервным копиям и почте. Кто войдёт в него, получит почти всю Вашу цифровую жизнь сразу - и может закрыть доступ Вам самим.", "s": ["В облаке находят фото паспорта и карт, заметки с паролями и фразу восстановления криптокошелька - криптовалюту выводят, вернуть её нельзя.", "Через «Найти iPhone» телефон удалённо блокируют и требуют выкуп.", "По сохранённым паролям заходят в почту, банки и мессенджеры."]}, "acc_recover": {"t": "Почта - главный ключ: через неё восстанавливают пароли почти от всех сервисов. Если не сможете сами её восстановить, при взломе или потере телефона потеряете и её, и всё, что к ней привязано.", "s": ["Потеряли телефон, а код восстановления приходит только на него - доступ к почте закрыт.", "Почту взломали и сменили номер для восстановления - вернуть её через поддержку бывает невозможно.", "Восстановление привязано к старому номеру - оператор отдал его другому человеку, и теперь он может восстановить Вашу почту."]}, "dev_phone": {"t": "В телефоне - банк, почта, мессенджеры, документы и коды из SMS, через которые восстанавливаются почти все аккаунты. Если его легко открыть, потеря или кража телефона за минуты превращается в потерю денег и аккаунтов.", "s": ["Украли телефон без кода или с простым кодом - за полчаса переводят деньги через банк, меняют пароли через SMS и пишут Вашим знакомым.", "Код подсмотрели в кафе или метро, а потом украли телефон - экран блокировки уже не защищает.", "Приложение по ссылке «посмотреть фото» или «отследить посылку» читает SMS и уведомления и подтверждает переводы без Вас."]}, "dev_who": {"t": "Каждый, кто пользуется Вашим телефоном, компьютером или домашним Wi-Fi, может случайно открыть опасную ссылку, установить заражённую программу или увидеть Ваши уведомления и коды. Отвечаете за безопасность Вы, а контролировать их действия не можете.", "s": ["Близкий открыл на Вашем телефоне ссылку из сообщения - вместе с ней установилась программа, которая крадёт пароли и переписку.", "Гость подключился к домашнему Wi-Fi с заражённого телефона - вирус пытается добраться до других устройств в сети.", "Через общий семейный аккаунт посторонний видит Ваши фото, геолокацию и переписку."]}, "dev_shared": {"t": "На общем устройстве остаются Ваши пароли и открытые аккаунты. Ими может воспользоваться любой, у кого есть доступ к устройству. А кто-то из близких может и без умысла помочь злоумышленникам: нажать на мошенническую ссылку или установить опасное приложение.", "s": ["Ребёнок скачал «бесплатную» игру - вместе с ней на планшет попала программа, которая крадёт сохранённые пароли.", "Кто-то из семьи нажал на ссылку в письме на общем компьютере - Ваша открытая почта уже у мошенников.", "Устройство отдали в ремонт или продали, не выйдя из аккаунтов. Доступ к ним получает чужой человек."]}, "dev_kids": {"t": "Дети доверяют тем, с кем давно играют или общаются в сети, и не умеют распознавать обман. Мошенники этим пользуются: через ребёнка добираются до телефона, документов и денег родителей.", "s": ["Просят сфотографировать документы родителей или экран банковского приложения «для приза» - потом по этим данным звонят родителям от имени банка.", "Просят прислать код из SMS с телефона родителей - так угоняют Telegram, Госуслуги или банк.", "Предлагают «бесплатные скины» за вход на поддельном сайте - аккаунт ребёнка крадут, а с ним и привязанную карту."]}, "msg_link": {"t": "Сообщению от знакомого доверяют, поэтому мошенники рассылают ссылки с уже захваченных аккаунтов. Сам знакомый может даже не знать, что его аккаунт взломан.", "s": ["По ссылке открывается страница «входа в Telegram» - Вы вводите номер и код, и аккаунт уходит мошенникам.", "С Вашего аккаунта та же ссылка уходит всем Вашим контактам.", "Мошенники читают переписку, просят у друзей деньги «до завтра» и шантажируют личными сообщениями."]}, "msg_code": {"t": "Код входа в Telegram - ключ от Вашего аккаунта. Кто его получит, будет читать переписку и писать от Вашего имени. А Telegram сегодня - ещё и вход в другие сервисы.", "s": ["Через кнопку «Войти через Telegram» получают доступ к сайтам и ботам, где Вы так входили.", "Коды подтверждения от других сервисов, которые приходят в Telegram, читают мошенники.", "Криптовалюту из кошелька в Telegram выводят, а по переписке находят документы и шантажируют."]}, "ai_voice": {"t": "Нейросети подделывают голос по нескольким секундам записи - из видео в соцсетях, голосовых сообщений или короткого телефонного разговора. Мошенники звонят знакомым голосом, создают панику и срочность, и человек переводит деньги, не успев проверить. Знакомый голос больше не доказывает, кто звонит.", "s": ["Звонит «сын»: попал в аварию, срочно нужны деньги, маме не говорить.", "Звонят пожилым родителям голосом внука - и они переводят деньги или отдают их «курьеру».", "Звонит «руководитель» его голосом и просит срочно перевести деньги партнёру."]}, "doc_send": {"t": "Фото паспорта годами лежит в чатах и почте. По нему мошенники звонят от имени организаций, оформляют займы и даже перевыпускают SIM-карту - и тогда все коды из SMS приходят им.", "s": ["Перевыпустили SIM-карту по поддельной доверенности - коды от банка и Госуслуг приходят мошенникам, деньги выводят.", "На Ваше имя оформляют онлайн-заём или регистрируют аккаунты для других мошеннических схем.", "Звонят «из полиции» или «Росфинмониторинга», называют Ваши паспортные данные и требуют перевести деньги."]}, "ai_data": {"t": "Всё, что Вы отправляете в ИИ, хранится у компании-разработчика. Такие компании взламывают, а часть сервисов использует данные для обучения или передаёт партнёрам и рекламодателям. Паспорт, пароли и рабочие документы туда отправлять нельзя.", "s": ["Утекла переписка с ИИ - и Ваш договор или паспорт оказывается в открытом доступе.", "Скриншот с паролем или кодом, отправленный в ИИ, остаётся в истории чата. Кто получит доступ к Вашему аккаунту в ИИ, получит и его.", "Рабочий документ, отправленный в бесплатный сервис, может попасть в данные для обучения - коммерческая информация уходит за пределы компании."]}, "doc_assist": {"t": "Помощник привык быстро выполнять Ваши поручения - на этом и строится обман. Сообщение, голосовое и даже видео от Вашего имени можно подделать или отправить с захваченного аккаунта. Если платёж не подтверждается отдельным способом, деньги с большой вероятностью уйдут мошенникам.", "s": ["Из взломанного Telegram помощнику приходит «срочно оплати счёт» с новыми реквизитами - а голосовое для убедительности подделал ИИ.", "Помощнику пишут «от Вас» с нового номера: «старый потерял, срочно переведи» - и он переводит, потому что так уже бывало."]}};
+const HOW = {"money": ["Банк никогда не просит перевести деньги на «безопасный счёт» и не спрашивает коды из SMS. Услышали такое - кладите трубку.", "В банк обращаетесь сами - через чат поддержки или номер в официальном приложении банка.", "Для покупок в интернете - отдельная или виртуальная карта, на ней только нужная сумма.", "На Госуслугах установлен самозапрет на кредиты - у Вас и у близких.", "Включены уведомления обо всех операциях по картам.", "Криптовалюта: сид-фраза только офлайн, вход на биржу через приложение-аутентификатор, вывод на заранее разрешённые адреса, основная сумма - на аппаратном кошельке."], "access": ["Пароли делятся на ключевые и второстепенные. Ключевые - почта, банки, мессенджеры, Apple или Google, Госуслуги: у каждого свой пароль, который нигде больше не используется.", "Пароль длинный: от 16 символов или фраза из 5-6 случайных слов. Без имён, дат и 123456.", "Пароли хранятся в менеджере паролей, а не в заметках и переписке. Мы рекомендуем Kaspersky Password Manager; если нужен международный вариант с открытым кодом - Bitwarden с регулярной резервной копией хранилища.", "Почта и аккаунт Apple или Google защищены вторым шагом входа: кроме пароля нужен код из приложения или подтверждение на Вашем телефоне.", "Есть запасной способ восстановления, который не зависит от основного телефона: второй номер, другая почта или устройство.", "Почты разделены на две зоны. Важная - только для банков, Госуслуг, Apple или Google: её адрес нигде не публикуется, защита максимальная. Вторая - для покупок, регистраций и рассылок. Зоны не пересекаются: важная почта не восстанавливается через второстепенную."], "family": ["У каждого своё устройство или свой профиль. Банк, почта и мессенджеры открыты только на Ваших устройствах.", "Телефон и компьютер закрыты кодом, который знаете только Вы.", "Гости подключаются к гостевой сети Wi-Fi, а не к основной.", "Если есть дети: игры и программы - только из официальных магазинов, а на любые просьбы в игре прислать код, фото или деньги ребёнок сначала идёт к взрослому.", "Включена функция «Найти iPhone» или «Найти устройство», обновления системы ставятся автоматически, приложения - только из официальных магазинов."], "msg": ["В Telegram включена двухэтапная аутентификация (облачный пароль) - без неё аккаунт можно украсть одним кодом.", "Код входа Вы никому не передаёте. Поддержка Telegram не пишет первой и коды не просит.", "Неожиданные ссылки и просьбы о деньгах проверяете звонком человеку по сохранённому номеру, а не в той же переписке. Этому же научили близких - родителей, детей, помощников.", "Время от времени проверяете список активных устройств и завершаете незнакомые."], "data": ["С неизвестными звонящими - коротко или никак. Представились банком или организацией - перезваниваете сами. Номер берёте из официального приложения или с сайта, адрес которого набрали сами, а не по первой ссылке в поиске: там бывает реклама мошенников.", "Документы передаёте только через официальные сервисы - Госуслуги, приложение банка - со своих устройств, в безопасности которых Вы уверены, и только нужные страницы.", "В чатах, почте и облаке нет фото паспорта, СНИЛС и карт: старые сообщения с ними удалены. Помощника, родственников и организации, которым Вы их отправляли, Вы попросили удалить их у себя.", "С помощником есть правило: срочные платежи подтверждаются звонком по известному номеру.", "С близкими договорились: срочная просьба о деньгах проверяется обратным звонком на сохранённый номер, даже если голос знакомый.", "В ИИ не отправляете паспорт, пароли и банковские данные. Из документов заранее убираете имена, телефоны и реквизиты."]};
+const PRIO = ["access", "money", "msg", "data", "family"];
+const RISK = {vl:0, l:0, lm:1, m:1.5, mh:2.5, h:3, vh:4};
+const COLOR = r => r>=3 ? 'r' : r>=1 ? 'y' : 'g';
+const TH = {}; THEMES.forEach(t=>TH[t.id]=t);
+
+/* ---------- метрики: события без персональных данных ---------- */
+/* ЗАГЛУШКА: подключить счётчик (собственный или Яндекс Метрика) после юридической проверки - политика, согласие на cookies. */
+window.dataLayer = window.dataLayer || [];
+function track(ev, p){ try{ window.dataLayer.push(Object.assign({event:'co_'+ev, ver:VER, t:Date.now()}, p||{})); }catch(e){} }
+
+const Q = {};
+for(const id in QS){ const q=QS[id]; q.id=id; q.o=q.o.map(a=>({t:a[0], lv:a[1], n:a[2]||'', flag:a[3]||null})); Q[id]=q; }
+/* детерминированное перемешивание вариантов; «не оценивается» - в конце */
+(function(){
+  const h=str=>{let x=2166136261; for(const c of str){x^=c.charCodeAt(0); x=Math.imul(x,16777619);} return x>>>0;};
+  for(const k in Q){ const q=Q[k];
+    const body=q.o.filter(z=>z.lv!=='x'), tail=q.o.filter(z=>z.lv==='x');
+    let seed=h(k); const rnd=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0; return seed/4294967296;};
+    for(let i=body.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1)); [body[i],body[j]]=[body[j],body[i]];}
+    q.o=[...body,...tail];
+  }
+})();
+
+let chosen=new Set(), noneSel=false, seq=[], idx=0, ans={}, done={}, stage='intro', tq=Date.now(), t0=null;
+
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify({chosen:[...chosen], noneSel, ans, idx, stage, done})); }catch(e){} }
+function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||'null'); }catch(e){ return null; } }
+function wipe(){ try{ localStorage.removeItem(KEY); }catch(e){} }
+
+function sel(id){ return (ans[id]||[]).map(i=>Q[id]?Q[id].o[i]:null).filter(Boolean); }
+function kidsOn(){ return chosen.has('kids') || sel('dev_who').some(o=>o.flag==='kids'); }
+function buildSeq(){
+  const s=[];
+  THEMES.forEach(t=>{ t.qs.forEach(id=>s.push({id,th:t.id}));
+    (t.cond||[]).forEach(c=>{ if(chosen.has(c.flag)) s.push({id:c.id, th:t.id}); });
+    if(t.kids && kidsOn()) s.push({id:t.kids, th:t.id}); });
+  return s;
+}
+
+/* ---------- главная ---------- */
+function drawProfile(){
+  const box=document.getElementById('pflist'); box.innerHTML='';
+  PROFILE.forEach(p=>{
+    const b=document.createElement('button'); b.className='pf'+(chosen.has(p.id)?' sel':'');
+    b.innerHTML=p.t+'<i class="mk"></i>';
+    b.onclick=()=>{ chosen.has(p.id)?chosen.delete(p.id):chosen.add(p.id); drawProfile(); };
+    box.appendChild(b);
+  });
+  const n=chosen.size, note=document.getElementById('pfnote');
+  note.innerHTML = n>=3 ? '<b>Отмечено '+n+'. Эта проверка - для Вас:</b> чем больше активов и людей вокруг Вас, тем больше слабых мест, через которые до них могут добраться мошенники.' : '';
+}
+function drawIntro(){
+  document.getElementById('pains').innerHTML=PAINS.map(p=>'<div class="pain"><b>'+p.t+'</b><span>'+p.s+'</span></div>').join('');
+  const typ=BASE10.filter(r=>r.typ).length;
+  document.getElementById('t10intro').innerHTML='<thead><tr><th>Защита</th><th>Обычно</th><th>После настройки</th></tr></thead><tbody>'+
+    BASE10.map(r=>'<tr><td>'+r.t+'</td><td class="c '+(r.typ?'y':'n')+'">'+(r.typ?'✓':'✗')+'</td><td class="c y">✓</td></tr>').join('')+
+    '</tbody><tfoot><tr><td>Итого</td><td class="c">'+typ+' из '+BASE10.length+'</td><td class="c">'+BASE10.length+' из '+BASE10.length+'</td></tr></tfoot>';
+  if(PRICE){ document.getElementById('pricebox').innerHTML='<span class="price">Базовая настройка - '+PRICE+'</span>'; }
+  drawProfile();
+}
+function show(id){ ['intro','flow','result'].forEach(s=>document.getElementById(s).classList.toggle('hidden',s!==id)); window.scrollTo({top:0}); }
+function begin(){ ans={}; done={}; seq=buildSeq(); idx=0; stage='flow'; t0=Date.now(); tq=Date.now(); save(); track('start',{profile:[...chosen].join(','), n:chosen.size}); show('flow'); draw(); }
+function resume(){ seq=buildSeq(); idx=Math.min(idx,seq.length-1); stage='flow'; tq=Date.now(); track('resume',{idx}); show('flow'); draw(); }
+
+/* ---------- вопросы: нейтральный выбор, без оценки до конца ---------- */
+function draw(){
+  const it=seq[idx], pane=document.getElementById('pane'), q=Q[it.id];
+  const total=seq.length, k=idx+1, mins=Math.max(1,Math.ceil((total-idx)*25/60));
+  document.getElementById('bar').style.width=(idx/total*100)+'%';
+  let h='<div class="qtop"><div class="step">'+TH[it.th].t+'</div><div class="tm">Вопрос '+k+' из '+total+' · ≈ '+mins+' мин</div></div><h2 class="q">'+q.q+'</h2>';
+  if(q.sub) h+='<p class="qsub">'+q.sub+'</p>';
+  h+='<div class="multi">'+(q.single ? (q.first?'Выберите, что Вы сделаете в первую очередь':'Выберите один вариант') : 'Можно выбрать несколько вариантов')+'</div>';
+  h+='<div id="opts"></div>';
+  h+='<div class="nav"><button class="btn ghost bk" onclick="prev()" aria-label="Назад">&larr;</button><button class="btn" id="nx" onclick="next()">'+(k===total?'Показать результат':'Далее')+'</button></div>';
+  pane.className='card'; pane.innerHTML=h;
+  const box=document.getElementById('opts');
+  q.o.forEach((o,i)=>box.appendChild(btn(it.id,i,o.t,o.lv==='x',!!q.single)));
+  refresh(it.id);
+}
+function btn(id,i,text,isX,single){
+  const b=document.createElement('button'); b.className='opt'; b.dataset.k=i;
+  b.innerHTML='<b>'+text+'</b><em class="mk"></em>';
+  b.onclick=()=>{
+    let a=new Set(ans[id]||[]);
+    if(single){ a = a.has(i) ? new Set() : new Set([i]); }
+    else if(a.has(i)) a.delete(i);
+    else { if(isX) a=new Set(); else [...a].forEach(x=>{ if(Q[id].o[x].lv==='x') a.delete(x); }); a.add(i); }
+    ans[id]=[...a];
+    const cur=seq[idx].id; seq=buildSeq(); idx=Math.max(0,seq.findIndex(x=>x.id===cur));
+    refresh(id); save();
+  };
+  return b;
+}
+function refresh(id){
+  const a=(ans[id]||[]).map(String);
+  document.querySelectorAll('#opts .opt').forEach(b=>{ const on=a.includes(b.dataset.k); b.className='opt'+(on?' sel i':''); b.querySelector('.mk').textContent=on?'✓':''; });
+  document.getElementById('nx').disabled = a.length===0;
+}
+function next(){
+  const it=seq[idx]; track('answer',{q:it.id, ms:Date.now()-tq}); tq=Date.now();
+  if(idx+1<seq.length){ idx++; save(); draw(); window.scrollTo({top:0}); } else finish(false);
+}
+function prev(){ if(idx>0){ idx--; save(); draw(); window.scrollTo({top:0}); } else { stage='intro'; save(); show('intro'); } }
+
+/* ---------- результат ---------- */
+function worstOf(id){ const s=sel(id).filter(o=>o.lv!=='x'); if(!s.length) return null; return s.reduce((w,o)=>RISK[o.lv]>RISK[w.lv]?o:w); }
+function finish(restored){
+  stage='result'; save();
+  const found=[], th={}; let cr=0,cy=0,cg=0;
+  seq.forEach(x=>{
+    const w=worstOf(x.id); th[x.th]=th[x.th]||{max:-1,n:0}; if(!w) return;
+    const r=RISK[w.lv], c=COLOR(r); th[x.th].n++; th[x.th].max=Math.max(th[x.th].max,r);
+    if(c==='r') cr++; else if(c==='y') cy++; else cg++;
+    if(c!=='g') found.push({id:x.id, th:x.th, r, w});
+  });
+  found.sort((a,b)=>(b.r-a.r)||(PRIO.indexOf(a.th)-PRIO.indexOf(b.th)));
+  show('result');
+  const hl=document.getElementById('hl'), hs=document.getElementById('hsub');
+  if(cr){ hl.textContent = cr===1?'Найден 1 критический риск':'Найдено критических рисков: '+cr; hl.style.color='var(--bad)';
+    hs.textContent='Начните с главного риска и плана ниже - это самые быстрые шаги, которые заметно снижают вероятность потерять деньги или аккаунты.'; }
+  else if(cy){ hl.textContent='Критических рисков не найдено'; hl.style.color='var(--mid)'; hs.textContent='Есть зоны, которые стоит усилить. Ниже - короткий план.'; }
+  else { hl.textContent='По этим вопросам рисков не найдено'; hl.style.color='var(--ok)'; hs.textContent='Хороший результат. Проверка короткая и не видит утечек, целевых атак и настроек Ваших устройств - их стоит перепроверять раз в несколько месяцев.'; }
+  document.getElementById('cr').textContent=cr; document.getElementById('cy').textContent=cy; document.getElementById('cg').textContent=cg;
+
+  /* главный риск */
+  const m=document.getElementById('main');
+  if(found.length){ const f=found[0], q=Q[f.id], red=COLOR(f.r)==='r';
+    m.innerHTML='<div class="main'+(red?'':' y')+'"><div class="lab0">Главный риск сейчас</div><b class="t">'+q.rl+'</b><p>'+f.w.n+'</p><p style="color:var(--muted);margin:0">Что с этим делать - шаг 1 Вашего плана ниже.</p></div>';
+  } else m.innerHTML='';
+
+  /* статусы тем */
+  const tb=document.getElementById('themes'); tb.innerHTML='';
+  THEMES.forEach(t=>{ if(!th[t.id]) return; const v=th[t.id];
+    let c='n', lab='Не относится'; if(v.n){ const cc=COLOR(v.max); c=cc; lab= cc==='r'?'Критично':cc==='y'?'Требует внимания':'В порядке'; }
+    tb.insertAdjacentHTML('beforeend','<div class="throw"><span>'+t.short+'</span><span class="chipst '+c+'">'+lab+'</span></div>'); });
+
+  /* 10 базовых защит: где Вы сейчас */
+  let have=0, unk=0;
+  const st=r=>{ if(!r.q || !(ans[r.q]||[]).length) return 'u'; const t=sel(r.q).map(o=>o.t);
+    if(t.some(x=>r.bad.some(b=>x.includes(b)))) return 'n'; if(t.some(x=>r.good.some(g=>x.includes(g)))) return 'y'; return 'u'; };
+  const rows=BASE10.map(r=>{ const v=st(r); if(v==='y') have++; if(v==='u') unk++; return '<tr><td>'+r.t+'</td><td class="c '+(r.typ?'y':'n')+'">'+(r.typ?'✓':'✗')+'</td><td class="c '+v+'">'+(v==='y'?'✓':v==='n'?'✗':'?')+'</td><td class="c y">✓</td></tr>'; }).join('');
+  document.getElementById('t10res').innerHTML='<thead><tr><th>Защита</th><th>Обычно</th><th>У Вас</th><th>После настройки</th></tr></thead><tbody>'+rows+'</tbody><tfoot><tr><td>Итого</td><td class="c">'+BASE10.filter(r=>r.typ).length+'</td><td class="c">'+have+'</td><td class="c">'+BASE10.length+'</td></tr></tfoot>';
+  document.getElementById('t10sum').textContent='По Вашим ответам уже настроено '+have+' из '+BASE10.length+'.'+(unk?' Отмеченное «?» короткая проверка не видит - это проверим на базовой настройке.':'');
+  if(PRICE){ document.getElementById('helpprice').innerHTML='<span class="price">'+PRICE+'</span>'; }
+
+  /* план 3-5 шагов */
+  const steps=found.slice(0,5), pl=document.getElementById('plan');
+  document.getElementById('planh').textContent = steps.length ? 'Ваш план: '+steps.length+' '+(steps.length===1?'шаг':steps.length<5?'шага':'шагов') : 'Ваш план';
+  pl.innerHTML = steps.length ? '' : '<p class="okline">Срочных шагов нет. Ниже в подробном разборе - как должна быть устроена защита по каждой теме: сверьтесь со списком.</p>';
+  steps.forEach((f,i)=>{ const q=Q[f.id];
+    const mo=sel(f.id).filter(o=>o.lv!=='x' && COLOR(RISK[o.lv])!=='g');
+    const d=document.createElement('div'); d.className='stepc'+(done[f.id]?' ok':'');
+    d.innerHTML='<div class="sh"><span class="num">'+(i+1)+'</span><b>'+q.rl+'</b></div>'+
+      '<div class="mine">'+(mo.length>1?'Ваши ответы: ':'Ваш ответ: ')+mo.map(o=>'«'+o.t+'»').join(', ')+'</div>'+
+      '<p><span class="lab">Почему это важно</span>'+f.w.n+'</p>'+
+      '<p><span class="lab">Что сделать</span>'+q.ra+'</p>'+
+      '<p><span class="lab">Как проверить, что сделано</span>'+q.chk+'</p>'+
+      '<label class="done"><input type="checkbox"'+(done[f.id]?' checked':'')+'> Сделано</label>';
+    d.querySelector('input').onchange=e=>{ done[f.id]=e.target.checked; d.classList.toggle('ok',e.target.checked); save(); track('step_done',{q:f.id, on:e.target.checked}); };
+    pl.appendChild(d);
+  });
+  if(found.length>5) pl.insertAdjacentHTML('beforeend','<p class="okline" style="color:var(--muted)">Ещё '+(found.length-5)+' - в подробном разборе ниже. Начните с этих пяти.</p>');
+  document.querySelector('#help h3').textContent = found.length ? 'Нужна помощь с настройкой?' : 'Хотите проверить настройки вместе со специалистом?';
+
+  /* подробный разбор */
+  const box=document.getElementById('details'); box.innerHTML='';
+  THEMES.forEach(t=>{ if(!th[t.id]) return;
+    const items=found.filter(f=>f.th===t.id);
+    let h='<summary><span>'+t.t+'</span><span style="color:var(--muted);font-size:12px">▼</span></summary><div class="rb">';
+    if(items.length){ h+='<h4>Риски по Вашим ответам</h4>';
+      items.forEach(f=>{ const red=COLOR(f.r)==='r', rt=RISK_TXT[f.id];
+        h+='<div class="rk'+(red?'':' y')+'"><b>'+Q[f.id].rl+'</b><div class="mine">Ваш ответ: «'+f.w.t+'»</div>'+rt.t+(rt.s.length?'<div class="sc2">Как это используют:</div><ul class="scl">'+rt.s.map(x=>'<li>'+x+'</li>').join('')+'</ul>':'')+'</div>'; });
+    } else h+='<p class="okline">По Вашим ответам здесь серьёзных рисков нет.</p>';
+    h+='<h4>Как должно быть устроено</h4><ul class="how">'+HOW[t.id].map(x=>'<li>'+x+'</li>').join('')+'</ul></div>';
+    const d=document.createElement('details'); d.className='rsec'; d.innerHTML=h; box.appendChild(d);
+  });
+  if(!restored){ track('finish',{base10:have, crit:cr, att:cy, ok:cg, n:seq.length, s:t0?Math.round((Date.now()-t0)/1000):null}); track('plan_shown',{steps:steps.length}); }
+}
+
+/* ---------- помощь: контакт только по желанию, один канал ---------- */
+let ch=null;
+function pickCh(c){ ch=c; document.querySelectorAll('#chs button').forEach(b=>b.classList.toggle('on',b.dataset.c===c));
+  const i=document.getElementById('cval'); i.disabled=false; i.value='';
+  i.type = c==='email'?'email':c==='phone'?'tel':'text';
+  i.placeholder = c==='tg'?'@username или номер телефона':c==='phone'?'+7 ...':'name@example.ru'; i.focus(); track('help_open',{channel:c}); }
+function sendHelp(){
+  const v=document.getElementById('cval').value.trim(), hint=document.getElementById('hh');
+  const okv = ch==='email' ? /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v) : ch==='phone' ? v.replace(/\D/g,'').length>=10 : ch==='tg' ? (/^@?[A-Za-z0-9_]{5,32}$/.test(v) || v.replace(/\D/g,'').length>=10) : false;
+  if(!ch){ hint.innerHTML='<span class="err">Выберите способ связи.</span>'; return; }
+  if(!okv){ hint.innerHTML='<span class="err">Проверьте контакт.</span>'; return; }
+  if(!document.getElementById('cons').checked){ hint.innerHTML='<span class="err">Нужно согласие на обработку контакта.</span>'; return; }
+  /* ЗАГЛУШКА: отправка заявки (канал, контакт, краткий профиль рисков без ответов) на сервер. На этапе MVP данные никуда не отправляются. */
+  track('help_submit',{channel:ch});
+  document.getElementById('help').innerHTML='<h3>Спасибо!</h3><p class="thanks">Мы свяжемся с Вами в ближайшее время и договоримся о сессии. Если кто-то от нашего имени попросит пароль, код или установить программу - это мошенники.</p>';
+}
+function printPlan(){ track('print'); document.querySelectorAll('details.rsec').forEach(d=>d.open=true); window.print(); }
+function again(){ wipe(); chosen.clear(); noneSel=false; ans={}; done={}; idx=0; stage='intro'; track('restart'); document.getElementById('resume').classList.add('hidden'); drawProfile(); show('intro'); }
+
+/* ---------- старт: восстановление прогресса ---------- */
+(function(){
+  track('open');
+  /* в окне предпросмотра печать недоступна - кнопку прячем */
+  try{ if(window.self!==window.top) document.getElementById('prn').hidden=true; }catch(e){ document.getElementById('prn').hidden=true; }
+  const s=load();
+  if(s){ chosen=new Set(s.chosen||[]); noneSel=!!s.noneSel; ans=s.ans||{}; done=s.done||{}; idx=s.idx||0; stage=s.stage||'intro'; }
+  drawIntro();
+  if(s && stage==='result'){ seq=buildSeq(); finish(true); }
+  else if(s && stage==='flow' && Object.keys(ans).length){ seq=buildSeq();
+    document.getElementById('resumetxt').textContent='У Вас есть незавершённая проверка: вопрос '+(Math.min(idx,seq.length-1)+1)+' из '+seq.length+'. Ответы сохранились.';
+    document.getElementById('resume').classList.remove('hidden'); }
+})();
+</script>
+</body>
+</html>
