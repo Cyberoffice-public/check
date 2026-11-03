@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="quiz-release" content="v26-recs1">
+<meta name="quiz-release" content="v26-pdf1">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Проверка цифровой безопасности</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -250,12 +250,7 @@ h1 small{display:block;font-family:'Manrope',sans-serif;font-size:15px;font-weig
 .ordsum ul{margin:6px 0 0;padding-left:18px;color:var(--muted)}
 .thanks{color:#a9dcc0;font-size:15px;margin:0}
 .btnrow{display:flex;gap:10px;margin-top:18px}.btnrow .btn{flex:1}
-@media print{
- body{background:#fff!important;color:#111!important}
- #intro,#flow,.offer,.deep,#gate,.btnrow{display:none!important}
- .card,.rsec,.ans{background:#fff!important;border-color:#bbb!important;color:#111!important;break-inside:avoid}
- details.rsec{display:block}
-}
+
 
 .counts .u b{color:var(--muted)}
 .ringcard .lvlbig{font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin:0 0 6px}
@@ -275,12 +270,12 @@ h1 small{display:block;font-family:'Manrope',sans-serif;font-size:15px;font-weig
 .cf small{display:block;color:var(--muted);font-size:12px;margin-top:10px}
 .cf .err{color:var(--bad)}
 .cons input[type=checkbox]{width:17px!important;height:17px;padding:0!important;margin:2px 0 0!important;flex:0 0 auto;accent-color:var(--accent)}
-@media print{#recgate,#addq,.cf{display:none!important}}
+
 .intro-cons{margin-top:18px;border:1px solid var(--line);border-radius:12px;padding:13px 14px;background:#172130;line-height:1.55}
 .policy-placeholder{color:var(--accent2);text-decoration:underline dotted;text-underline-offset:3px}
 .pdfhint{font-size:13px;color:var(--muted);margin:10px 0 0}
 @media(max-width:520px){.wrap{padding:20px 14px 40px}.card,.offer,.deep,.gate{padding:16px}.qtop{align-items:flex-start;flex-wrap:wrap}.qtop .tm{white-space:normal}.btnrow{flex-direction:column}.resume .row{flex-direction:column}.resume .row .btn{width:100%}.dial{gap:12px}.ring{width:92px;height:104px}.counts{gap:6px}.counts div{padding:9px 7px;font-size:11px}.counts b{font-size:20px}.t10{font-size:12.5px;min-width:450px}.sum .l{white-space:normal}.th b{padding-right:54px}.th .pr{right:10px;font-size:12px}}
-@media print{.pdfhint{display:none!important}}
+
 
 .section-rec{margin-top:22px;padding-top:18px;border-top:1px solid var(--line);overflow-wrap:anywhere}
 .section-rec h3{font-size:18px;line-height:1.4;margin:0 0 10px}
@@ -289,12 +284,52 @@ h1 small{display:block;font-family:'Manrope',sans-serif;font-size:15px;font-weig
 .section-rec li{padding-left:3px;margin-bottom:12px;line-height:1.65}
 .section-rec p{line-height:1.65}
 .rec-help{margin-top:20px}
+
+
+.print-only{display:none}
+#prn{white-space:normal}
+@page{size:A4;margin:16mm 15mm 18mm}
 @media print{
- details.rsec{break-inside:auto;overflow:visible}
- .section-rec{color:#111!important}
- .section-rec h3,.section-rec h4{color:#111!important;break-after:avoid}
- .section-rec li{break-inside:avoid}
- .rec-help{display:none!important}
+ html,body{background:#fff!important;color:#111!important;padding:0!important}
+ body{font-family:Arial,sans-serif;font-size:10.5pt;line-height:1.45}
+ .wrap{max-width:none!important;width:auto!important;margin:0!important;padding:0!important}
+ #intro,#flow,.offer,.deep,#recgate,#addq,.cf,.btnrow,.rec-help,.pdfhint{display:none!important}
+ #result{--text:#111;--muted:#555;--line:#ccc;--ok:#176b43;--mid:#805500;--bad:#a22626}
+ .print-only{display:block}
+ .print-title{font-family:Arial,sans-serif;font-size:22pt;line-height:1.2;margin:0 0 8mm}
+ .print-meta{font-size:9pt;color:#555;margin:0 0 6mm}
+ #result>.brand{display:none}
+ .card,.ringcard,.rsec,.ans,.counts div{background:#fff!important;color:#111!important;box-shadow:none!important;border-color:#ccc!important}
+ .ringcard{break-inside:avoid;page-break-inside:avoid}
+ .ringcard .lvlbig{color:#111!important}
+ .counts div,.counts b{color:#111!important}
+ h1,h2,h3,h4,summary,.sect{break-after:avoid;page-break-after:avoid}
+ p,li{orphans:3;widows:3}
+ .t10wrap{overflow:visible!important}
+ .t10{width:100%;min-width:0!important;font-size:9pt}
+ .t10 th,.t10 td{padding:1.5mm 2.5mm;background:#fff!important;color:#111!important;border-color:#ccc!important}
+ thead{display:table-header-group}
+ tfoot{display:table-row-group}
+ tr{break-inside:avoid;page-break-inside:avoid}
+ tr.grp{break-after:avoid;page-break-after:avoid}
+ #explwrap>.sect{display:none}
+ details.rsec{display:block;break-before:page;page-break-before:always;break-inside:auto;page-break-inside:auto;overflow:visible;border:0;border-radius:0;margin:0;padding:0}
+ .rsec summary{display:block;padding:0 0 4mm;font-size:15pt;line-height:1.3;break-inside:avoid}
+ .rsec summary .chipst{display:inline-block;font-size:9pt;margin-left:3mm}
+ .rsec .rb{padding:0}
+ .ans{break-inside:avoid;page-break-inside:avoid;border-radius:0;padding:3mm;margin:0 0 4mm}
+ .ans p,.ans .mine{color:#111!important}
+ .ans .qn{color:#333!important}
+ .section-rec{break-inside:auto;page-break-inside:auto;margin-top:5mm;padding-top:4mm;border-color:#ccc;overflow-wrap:break-word}
+ .has-answers .section-rec{break-before:page;page-break-before:always}
+ .section-rec>p:first-of-type{break-after:avoid;page-break-after:avoid}
+ .section-rec ul{break-inside:avoid;page-break-inside:avoid}
+ .section-rec h3{font-size:13pt;color:#111!important;margin:0 0 3mm}
+ .section-rec h4{font-size:11pt;color:#111!important;margin:4mm 0 2mm}
+ .section-rec p,.section-rec li{font-size:10pt;line-height:1.4}
+ .section-rec ol,.section-rec ul{padding-left:6mm;margin:2mm 0 4mm}
+ .section-rec li{break-inside:avoid;page-break-inside:avoid;margin:0 0 2mm;padding-left:1mm}
+ .foot{color:#555!important;font-size:9pt;margin-top:5mm;break-inside:avoid}
 }
 </style>
 </head><body>
@@ -326,6 +361,8 @@ h1 small{display:block;font-family:'Manrope',sans-serif;font-size:15px;font-weig
 </section>
 
 <section id="result" class="hidden">
+  <h1 class="print-only print-title">Результат проверки цифровой безопасности</h1>
+  <p class="print-only print-meta">Самооценка по ответам на вопросы · <time id="printdate"></time></p>
   <div class="brand"><i></i> Ваш результат</div>
 
   <div class="card ringcard" style="margin-top:18px">
@@ -355,12 +392,13 @@ h1 small{display:block;font-family:'Manrope',sans-serif;font-size:15px;font-weig
 
   <div class="gate" id="recgate">
     <h3>Базовые рекомендации по разделам</h3>
-    <p>Полные рекомендации находятся в разборе каждого пройденного раздела. Их можно открыть здесь и скачать. Или оставьте электронную почту для отправки рекомендаций.</p>
+    <p>Полные рекомендации находятся в разборе каждого пройденного раздела. Их можно открыть здесь и сохранить вместе с результатом в PDF. Или оставьте электронную почту для отправки рекомендаций.</p>
     <input id="remail" type="email" placeholder="name@example.ru" autocomplete="email">
     <label class="cons"><input type="checkbox" id="rcons"> <span>Согласен(на) на обработку e-mail, чтобы мне отправили рекомендации.</span></label>
     <button class="btn" onclick="sendRecs()">Отправить на почту</button>
     <button class="btn ghost" style="margin-top:10px" onclick="showRecs()">Открыть все рекомендации</button>
-    <button class="btn ghost" id="dlrecs" style="margin-top:10px" onclick="dlRecs()">Скачать рекомендации</button>
+    <button class="btn ghost" id="savepdf" style="margin-top:10px" onclick="printPlan()" aria-describedby="pdfhint">Сохранить результат и рекомендации в PDF</button>
+    <p class="pdfhint" id="pdfhint">В окне печати выберите «Сохранить как PDF». На телефоне эта возможность зависит от браузера и системы.</p>
     <small id="rhint">E-mail нужен только для отправки рекомендаций.</small>
   </div>
 
@@ -392,8 +430,7 @@ h1 small{display:block;font-family:'Manrope',sans-serif;font-size:15px;font-weig
     <div class="cf hidden" id="cf_deep"></div>
   </div>
 
-  <div class="btnrow"><button class="btn ghost" id="prn" onclick="printPlan()">Сохранить результат (PDF)</button><button class="btn ghost" onclick="again()">Пройти заново</button></div>
-  <p class="pdfhint" id="pdfhint">Для сохранения выберите в окне печати «Сохранить как PDF» (или «Печать в PDF»), затем нажмите «Сохранить». На телефоне возможность сохранения зависит от браузера и системы.</p>
+  <div class="btnrow"><button class="btn ghost" id="prn" onclick="printPlan()" aria-describedby="pdfhint">Сохранить результат (PDF)</button><button class="btn ghost" onclick="again()">Пройти заново</button></div>
   <div class="foot">Результат проверки носит ознакомительный характер и не заменяет проверку настроек Ваших устройств и аккаунтов специалистом.</div>
 </section>
 
@@ -497,7 +534,7 @@ function band(p){ return p<=30?['Низкий уровень цифровой з
   : ['Высокий уровень цифровой защиты','#5fb98b','Ваши ответы показывают продуманный подход к цифровой безопасности. Стоит поддерживать его и периодически перепроверять.']; }
 
 /* ---------- результат ---------- */
-let RES={};
+let RES={}, scoreTimer=null;
 function finish(restored){
   if(!restored){ run.forEach(x=>{ if(!done.includes(x)) done.push(x); }); done=ALL_IDS.filter(x=>done.includes(x)); }
   stage='result'; save();
@@ -514,6 +551,8 @@ function finish(restored){
 
   /* круговая диаграмма: показатель защищённости по пройденным темам */
   const score=n?Math.round(100*(1-sum/n)):100, [title,col,sub]=band(score);
+  RES.score=score;
+  if(scoreTimer!==null){clearInterval(scoreTimer);scoreTimer=null;}
   document.getElementById('lvl').textContent=title; document.getElementById('lvl').style.color=col;
   document.getElementById('lvlsub').textContent=sub;
   document.getElementById('cr').textContent=cr; document.getElementById('cy').textContent=cy; document.getElementById('cg').textContent=cg;
@@ -521,7 +560,7 @@ function finish(restored){
   document.getElementById('ringnote').textContent='Показатель защищённости - '+score+' из 100: чем выше, тем лучше. Он рассчитан по ответам в проверенных темах ('+done.length+' из '+ALL_IDS.length+')'+(nd?'; ещё '+nd+' '+(nd===1?'тема не проверена':nd<5?'темы не проверены':'тем не проверено')+'.':'.')+(cn?' Ответов, которые требуют уточнения: '+cn+'.':'');
   const arc=document.getElementById('arc'); arc.setAttribute('stroke',col); arc.style.strokeDashoffset=289;
   setTimeout(()=>{arc.style.strokeDashoffset=289-(289*score/100);},60);
-  const sc=document.getElementById('score'); if(restored){ sc.textContent=score; } else { let cur=0; const t=setInterval(()=>{cur+=Math.max(1,Math.round(score/28)); if(cur>=score){cur=score;clearInterval(t);} sc.textContent=cur;},28); }
+  const sc=document.getElementById('score'); if(restored){ sc.textContent=score; } else { let cur=0; scoreTimer=setInterval(()=>{cur+=Math.max(1,Math.round(score/28)); if(cur>=score){cur=score;clearInterval(scoreTimer);scoreTimer=null;} sc.textContent=cur;},28); }
 
   /* по темам: все 5 тем, непроверенные - «Не проверено» */
   /* Рейтинги по темам рассчитываются для предложения настройки, но повторный визуальный блок убран. */
@@ -545,7 +584,7 @@ function finish(restored){
       const rt = x.o.r==null ? 'Рейтинг: не определяется автоматически' : 'Рейтинг риска: '+x.o.r+'/5 - '+x.o.rl;
       h+='<div class="ans '+x.s+'"><div class="qn">'+q.rn+'</div><div class="mine">Ваш ответ: «'+x.o.t+'»</div><div class="rt">'+rt+'</div>'+x.o.ex.map(p=>'<p>'+p+'</p>').join('')+'</div>'; }); });
     h+=sectionRecHTML(sid, true)+'</div>';
-    const d=document.createElement('details'); d.className='rsec'; d.id='section-'+sid; d.open=!ex.children.length; d.innerHTML=h; ex.appendChild(d); });
+    const d=document.createElement('details'); d.className='rsec'+(h.includes('class="ans ')?' has-answers':''); d.id='section-'+sid; d.open=!ex.children.length; d.innerHTML=h; ex.appendChild(d); });
   document.getElementById('explwrap').classList.toggle('hidden',!ex.children.length);
 
   /* выбор тем настройки: темы с рисками отмечены заранее */
@@ -582,17 +621,6 @@ function showRecs(){
   document.querySelectorAll('#expl details.rsec').forEach(d=>d.open=true);
   track('recs_show',{n:recItems().length});
   document.getElementById('explwrap').scrollIntoView({behavior:'smooth',block:'start'});
-}
-function recommendationsDocument(){
-  const items=recItems();
-  return '<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Базовые рекомендации по цифровой безопасности</title><style>body{font-family:Arial,sans-serif;max-width:800px;margin:24px auto;padding:0 16px;color:#222;line-height:1.6}h1{font-size:24px}h3{font-size:20px}h4{font-size:16px}li{margin-bottom:10px}article{margin:28px 0;border-top:1px solid #ccc}small{color:#555}@media print{h3,h4{break-after:avoid}li{break-inside:avoid}}</style></head><body><h1>Базовые рекомендации по цифровой безопасности</h1><p><small>Проверка цифровой безопасности · '+new Date().toLocaleDateString('ru-RU')+'</small></p>'+
-    (items.length?items.map(sid=>sectionRecHTML(sid,false)).join(''):'<p>Нет пройденных разделов.</p>')+
-    '<p><small>Мы никогда не просим пароли, коды из SMS и установку программ удалённого доступа. Если кто-то просит это от нашего имени - это мошенники.</small></p></body></html>';
-}
-function dlRecs(){
-  const html=recommendationsDocument();
-  try{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([html],{type:'text/html'})); a.download='rekomendacii.html'; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},500); }catch(e){}
-  track('recs_download',{n:recItems().length});
 }
 function sendRecs(){ const v=document.getElementById('remail').value.trim(), h=document.getElementById('rhint');
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){ h.innerHTML='<span class="err">Проверьте e-mail.</span>'; return; }
@@ -648,7 +676,28 @@ function sendOrder(m){
   const box=document.getElementById('cf_'+m); box.dataset.sent='1';
   box.innerHTML='<p class="thanks"><b>Спасибо! Заявка принята.</b> Специалист свяжется с Вами, чтобы согласовать время. Если кто-то от нашего имени попросит пароль, код или установить программу - это мошенники.</p>';
 }
-function printPlan(){ track('print'); document.querySelectorAll('details.rsec').forEach(d=>d.open=true); window.print(); }
+// The same preparation also handles Ctrl+P. afterprint restores the screen state.
+let printSections=null;
+function preparePrint(){
+  if(stage!=='result') return;
+  if(printSections===null) printSections=Array.from(document.querySelectorAll('#expl details.rsec'),d=>({element:d,open:d.open}));
+  document.querySelectorAll('#expl details.rsec').forEach(d=>d.open=true);
+  if(scoreTimer!==null){clearInterval(scoreTimer);scoreTimer=null;}
+  document.getElementById('score').textContent=RES.score;
+  document.getElementById('arc').style.strokeDashoffset=289-(289*RES.score/100);
+  document.getElementById('printdate').textContent=new Date().toLocaleDateString('ru-RU');
+}
+function restoreAfterPrint(){
+  if(printSections!==null) printSections.forEach(({element,open})=>{if(element.isConnected) element.open=open;});
+  printSections=null;
+}
+function printPlan(){
+  if(stage!=='result') return;
+  track('print'); preparePrint();
+  try{ window.print(); }catch(error){ restoreAfterPrint(); throw error; }
+}
+window.addEventListener('beforeprint',preparePrint);
+window.addEventListener('afterprint',restoreAfterPrint);
 function again(){ wipe(); document.getElementById('introcons').checked=false; chosen.clear(); all=false; ans={}; pick={}; done=[]; run=[]; idx=0; stage='intro'; track('restart');
   ['cf_setup','cf_deep'].forEach(x=>{ const b=document.getElementById(x); delete b.dataset.sent; b.innerHTML=''; }); document.getElementById('cf_deep').classList.add('hidden');
   document.getElementById('resume').classList.add('hidden'); drawScenarios(); show('intro'); }
@@ -657,7 +706,7 @@ function again(){ wipe(); document.getElementById('introcons').checked=false; ch
 (function(){
   track('open');
   try{ if(window.self!==window.top) document.getElementById('prn').hidden=true; }catch(e){ document.getElementById('prn').hidden=true; }
-  if(INFRAME) document.getElementById('dlrecs').hidden=true;
+  if(INFRAME) document.getElementById('savepdf').hidden=true;
   const s=load(); const known=new Set([...ALL_IDS,...EXTRA.map(x=>x.id)]);
   if(s){ chosen=new Set(s.chosen||[]); all=!!s.all; ans={}; Object.keys(s.ans||{}).forEach(k=>{ if(Q[k] && Array.isArray(s.ans[k])) ans[k]=s.ans[k].filter(i=>Q[k].o[i]); });
     done=(s.done||[]).filter(x=>SEC[x]); run=(s.run||[]).filter(x=>SEC[x]); idx=s.idx||0; stage=s.stage||'intro';
